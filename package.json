@@ -1,0 +1,7 @@
+{
+  "name": "vue-multi-calendar-picker",
+  "version": "0.0.1",
+  "dependencies": {
+    "moment": "^2.24.0"
+  }
+}
