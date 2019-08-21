@@ -1,10 +1,10 @@
 <template>
     <div class="calendar-container" v-click-outside="close">
         <div class="calendar-input" @click="toggle">
-            <input :placeholder="placeholder" :class="inputClass" class="calendar-input" v-model="inputValue" readonly />
+            <input title="" :placeholder="placeholder" :class="inputClass" class="calendar-input" v-model="inputValue" readonly />
         </div>
-        <div class="calendar-dropdown" v-if="isShowCalendar">
-            <div class="action-buttons">
+        <div class="calendar-dropdown" v-if="isShowCalendar" :class="{'simple-dropdown' : !isShowActionButtons}">
+            <div class="action-buttons" v-if="isShowActionButtons">
                 <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}" @click="prevMonthView">
                     <i class="fa fa-chevron-left"></i>
                 </div>
@@ -101,7 +101,10 @@
             },
             limitMax(){
 				return moment(this.max, this.format);
-            }
+            },
+			isShowActionButtons() {
+				return this.checkAllowPrev() || this.checkAllowNext();
+			}
         },
         methods: {
 			initCalendarLayers(date) {
@@ -223,6 +226,9 @@
         box-shadow: 1px 1px 5px 0 #ccc;
         user-select: none;
         border-radius: 5px;
+    }
+    .calendar-dropdown.simple-dropdown {
+        padding: 0;
     }
     .month-changer {
         position: absolute;

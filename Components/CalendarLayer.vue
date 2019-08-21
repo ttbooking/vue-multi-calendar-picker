@@ -125,6 +125,10 @@
         border: 1px solid lightgray;
         margin-top: 20px;
     }
+    .simple-dropdown .calendar-layer {
+        margin-top: 0;
+        border: none;
+    }
 
     .day-container {
         display: table-cell;
