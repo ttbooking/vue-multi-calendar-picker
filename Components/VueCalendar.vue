@@ -85,7 +85,7 @@
 		computed: {
 			markedDateRange() {
 				let range = [];
-				if (this.markedRange.length){
+				if (this.markedRange && this.markedRange.length){
 					for (let i in this.markedRange) {
 						range.push({
 							start: moment(this.markedRange[i].period.start, this.format),
@@ -137,7 +137,7 @@
 			initCalendar(){
 				let date = moment(moment().format(this.format), this.format);
 				if (this.dateModel && this.dateModel.isValid()) {
-					if (this.min.length && this.dateModel < this.limitMin) {
+					if (this.min && this.min.length && this.dateModel < this.limitMin) {
 						this.inputValue = this.min;
 						this.dateModel = this.getDateModelFromValue();
 					}
@@ -183,14 +183,13 @@
 			nextMonthView() {
 				if (this.checkAllowNext()) {
 					let lastMonth = this.activeLayers[0].moment.clone();
-					console.log(lastMonth.add(1, 'month')); //перескакиваем, плавно по одному месяцу
+					lastMonth.add(1, 'month'); //перескакиваем, плавно по одному месяцу
 					this.initCalendarLayers(lastMonth);
 				}
 			},
 			emitSelection(payload) {
 				this.dateModel = payload;
 				this.inputValue = this.dateModel.format(this.format);
-				console.log(this.inputValue);
 				this.$emit('input', this.inputValue);
 				this.$emit('selected');
 				this.isShowCalendar = false;
