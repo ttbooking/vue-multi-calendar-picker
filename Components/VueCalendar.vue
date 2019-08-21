@@ -3,7 +3,7 @@
         <div class="calendar-input" @click="toggle">
             <input title="" :placeholder="placeholder" :class="inputClass" class="calendar-input" v-model="inputValue" readonly />
         </div>
-        <div class="calendar-dropdown" v-if="isShowCalendar" :class="{'simple-dropdown' : !isShowActionButtons}">
+        <div class="calendar-dropdown simple-dropdown" v-if="isShowCalendar">
             <div class="action-buttons" v-if="isShowActionButtons">
                 <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}" @click="prevMonthView">
                     <i class="fa fa-chevron-left"></i>
@@ -31,82 +31,82 @@
 </template>
 
 <script>
-    import ClickOutsideDirective from '../ClickOutsideDirective';
+	import ClickOutsideDirective from '../ClickOutsideDirective';
 	import CalendarLayer from "./CalendarLayer";
 	import moment from 'moment';
 	export default {
 		components: {CalendarLayer},
 		name: "vue-calendar",
-        props: {
+		props: {
 			value: String,
-            placeholder: String,
-            format: {
+			placeholder: String,
+			format: {
 				type: String,
 				default: 'DD.MM.YYYY'
-            },
-            calendarsCount: {
+			},
+			calendarsCount: {
 				type: Number,
-                default: 1,
-            },
-            inputClass: {
+				default: 1,
+			},
+			inputClass: {
 				type: String|Object,
-                default() {
+				default() {
 					return 'form-control'
 				}
-            },
-            min :{
+			},
+			min :{
 				type: String,
-                default: null
-            },
-            max :{
+				default: null
+			},
+			max :{
 				type: String,
-                default: null
-            },
-            markedRange: {
+				default: null
+			},
+			markedRange: {
 				type: Array,
-                default() {
+				default() {
 					return []
 				}
-            },
-            title: String,
+			},
+			title: String,
 
 		},
-        created() {
-            this.initCalendar();
-        },
-        data() {
+		created() {
+			this.initCalendar();
+		},
+		data() {
 			return {
 				inputValue: this.value,
-                dateModel: this.getDateModelFromValue(),
-                activeLayers: [],
-                isShowCalendar: false,
-            };
-        },
-        computed: {
+				dateModel: this.getDateModelFromValue(),
+				activeLayers: [],
+				isShowCalendar: false,
+			};
+		},
+		computed: {
 			markedDateRange() {
 				let range = [];
 				if (this.markedRange.length){
 					for (let i in this.markedRange) {
 						range.push({
-                            start: moment(this.markedRange[i].period.start, this.format),
-                            end: moment(this.markedRange[i].period.end, this.format),
-                            class: this.markedRange[i].class,
-                        })
-                    }
-                }
-                return range;
-            },
-            limitMin(){
+							start: moment(this.markedRange[i].period.start, this.format),
+							end: moment(this.markedRange[i].period.end, this.format),
+							class: this.markedRange[i].class,
+						})
+					}
+				}
+				return range;
+			},
+			limitMin(){
 				return moment(this.min, this.format);
-            },
-            limitMax(){
+			},
+			limitMax(){
 				return moment(this.max, this.format);
-            },
+			},
 			isShowActionButtons() {
 				return this.checkAllowPrev() || this.checkAllowNext();
 			}
-        },
-        methods: {
+		},
+		methods: {
 			initCalendarLayers(date) {
 				if (date && date.isValid()) {
 					let dateClone = date.clone();
@@ -133,39 +133,45 @@
 						dateClone.add(1, 'month');
 					}
 				}
-            },
-            initCalendar(){
+			},
+			initCalendar(){
 				let date = moment(moment().format(this.format), this.format);
 				if (this.dateModel && this.dateModel.isValid()) {
 					if (this.min.length && this.dateModel < this.limitMin) {
 						this.inputValue = this.min;
 						this.dateModel = this.getDateModelFromValue();
-                    }
+					}
 					date = this.dateModel;
 				}
 				this.initCalendarLayers(date);
-            },
+			},
 			getDateModelFromValue() {
 				return moment(this.inputValue, this.format);
-            },
-            open(){
+			},
+			open(){
 				this.isShowCalendar = true;
-            },
-            close(){
+			},
+			close(){
 				this.isShowCalendar = false;
-            },
-            toggle(){
+			},
+			toggle(){
 				this.isShowCalendar = !this.isShowCalendar;
-            },
-            checkAllowPrev() {
-				let firstMonth = this.activeLayers[0].moment.clone();
-				firstMonth.subtract(1, 'month').endOf('month');
-				return firstMonth >= this.limitMin;
-            },
+			},
+			checkAllowPrev() {
+				if (this.limitMin.isValid()) {
+					let firstMonth = this.activeLayers[0].moment.clone();
+					firstMonth.subtract(1, 'month').endOf('month');
+					return firstMonth >= this.limitMin;
+				}
+				return true;
+			},
 			checkAllowNext() {
-				let lastMonth = this.activeLayers[this.activeLayers.length-1].moment.clone();
-				lastMonth.add(1, 'month').startOf('month');
-				return this.limitMax >= lastMonth;
+				if (this.limitMax.isValid()) {
+					let lastMonth = this.activeLayers[this.activeLayers.length - 1].moment.clone();
+					lastMonth.add(1, 'month').startOf('month');
+					return this.limitMax >= lastMonth;
+				}
+				return true;
 			},
 			prevMonthView() {
 				if (this.checkAllowPrev()) {
@@ -173,41 +179,41 @@
 					firstMonth.subtract(1, 'month');
 					this.initCalendarLayers(firstMonth);
 				}
-            },
+			},
 			nextMonthView() {
 				if (this.checkAllowNext()) {
 					let lastMonth = this.activeLayers[0].moment.clone();
 					console.log(lastMonth.add(1, 'month')); //перескакиваем, плавно по одному месяцу
 					this.initCalendarLayers(lastMonth);
 				}
-            },
-            emitSelection(payload) {
+			},
+			emitSelection(payload) {
 				this.dateModel = payload;
 				this.inputValue = this.dateModel.format(this.format);
 				console.log(this.inputValue);
 				this.$emit('input', this.inputValue);
 				this.$emit('selected');
 				this.isShowCalendar = false;
-            }
-        },
-        watch: {
+			}
+		},
+		watch: {
 			min(){
 				this.initCalendar();
-            },
-            max(){
+			},
+			max(){
 				this.initCalendar();
-            },
-            value:{
+			},
+			value:{
 				handler(){
 					this.inputValue = this.value;
 					this.dateModel = this.getDateModelFromValue();
 				},
-                immediate: true,
+				immediate: true,
 			}
-        },
-        directives: {
+		},
+		directives: {
 			'click-outside' : ClickOutsideDirective,
-        }
+		}
 	}
 </script>
 
@@ -233,6 +239,7 @@
     .month-changer {
         position: absolute;
         cursor: pointer;
+        top: 20px;
     }
     .month-changer:hover {
         position: absolute;
