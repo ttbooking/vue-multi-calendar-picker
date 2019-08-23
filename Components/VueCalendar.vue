@@ -208,7 +208,10 @@
 					this.dateModel = this.getDateModelFromValue();
 				},
 				immediate: true,
-			}
+			},
+			inputValue() {
+				this.$emit('input', this.inputValue)
+            }
 		},
 		directives: {
 			'click-outside' : ClickOutsideDirective,
