@@ -139,6 +139,7 @@
 				if (this.dateModel && this.dateModel.isValid()) {
 					if (this.min && this.min.length && this.dateModel < this.limitMin) {
 						this.inputValue = this.min;
+						this.$emit('input', this.inputValue);
 						this.dateModel = this.getDateModelFromValue();
 					}
 					date = this.dateModel;
