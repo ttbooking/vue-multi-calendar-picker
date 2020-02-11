@@ -87,11 +87,13 @@
 				let range = [];
 				if (this.markedRange && this.markedRange.length){
 					for (let i in this.markedRange) {
-						range.push({
-							start: moment(this.markedRange[i].period.start, this.format),
-							end: moment(this.markedRange[i].period.end, this.format),
-							class: this.markedRange[i].class,
-						})
+						if (this.markedRange.hasOwnProperty(i)) {
+							range.push({
+								start: moment(this.markedRange[i].period.start, this.format),
+								end: moment(this.markedRange[i].period.end, this.format),
+								class: this.markedRange[i].class,
+							})
+						}
 					}
 				}
 				return range;
@@ -112,15 +114,9 @@
 					let dateClone = date.clone();
 
 					dateClone = moment(dateClone.endOf('month').format(this.format), this.format);
-					while (this.limitMin.diff(dateClone, 'month') > 0) {
-						dateClone.add(1, 'month');
-					}
 
-					while (this.limitMax.diff(dateClone, 'month') < 0) {
-						let doNothing = true;
-						if (doNothing) {
-							break;
-						}
+					if (this.limitMin.diff(dateClone, 'month') > 0) {
+						dateClone.month(this.limitMin.month());
 					}
 
 					this.activeLayers = [];
@@ -128,7 +124,7 @@
 						this.activeLayers.push({
 							month: dateClone.month(),
 							year: dateClone.year(),
-							moment: dateClone.clone(),
+							moment: moment(dateClone.format(this.format), this.format),
 						});
 						dateClone.add(1, 'month');
 					}
