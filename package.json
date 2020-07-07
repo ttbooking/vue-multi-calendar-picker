@@ -1,7 +1,22 @@
 {
   "name": "vue-multi-calendar-picker",
-  "version": "0.1.0",
+  "version": "1.0.2",
   "dependencies": {
     "moment": "^2.24.0"
-  }
+  },
+  "description": "CalendarPicker based on momentjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttbooking/vue-multi-calendar-picker.git"
+  },
+  "author": "a.romashov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ttbooking/vue-multi-calendar-picker/issues"
+  },
+  "homepage": "https://github.com/ttbooking/vue-multi-calendar-picker#readme"
 }
