@@ -1,6 +1,6 @@
 {
   "name": "vue-multi-calendar-picker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
     "moment": "^2.24.0",
     "@ttbooking/vue-click-outside-directive": "^1.0.0"
