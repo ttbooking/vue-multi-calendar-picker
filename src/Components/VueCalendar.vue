@@ -36,6 +36,7 @@
                         :year="layer.year"
                         :marked-range="markedDateRange"
                         @select="emitSelection"
+                        @dayHover="payload => $emit('dayHover', payload)"
                     >
                         <template v-slot:day-sub="params">
                             <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
@@ -215,7 +216,7 @@ export default {
             this.inputValue = this.dateModel.format(this.format);
             this.$emit('input', this.inputValue);
             this.$emit('selected');
-            this.isShowCalendar = false;
+            this.close();
         }
     },
     watch: {
@@ -241,59 +242,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.title {
-    text-align: center;
-}
-.calendar-input {
-    width: 100%;
-}
-.calendar-dropdown {
-    position: absolute;
-    z-index: 99;
-    background: white;
-    padding: 20px;
-    box-shadow: 1px 1px 5px 0 #ccc;
-    user-select: none;
-    border-radius: 5px;
-}
-.calendar-dropdown.simple-dropdown {
-    padding: 0;
-}
-.month-changer {
-    position: absolute;
-    cursor: pointer;
-    top: 20px;
-}
-.month-changer:hover {
-    position: absolute;
-    cursor: pointer;
-}
-
-.prev-month {
-    left: 20px;
-    font-size: 1.5em;
-}
-
-.disabled {
-    color: #eee;
-    cursor: initial;
-}
-
-.layer-container {
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.next-month {
-    right: 20px;
-    font-size: 1.5em;
-}
-
-.title {
-    font-size: 18px;
-}
-</style>

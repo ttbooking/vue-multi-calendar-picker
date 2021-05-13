@@ -1,0 +1,133 @@
+
+.calendar-input {
+  width: 100%;
+  color: $primary-text-color;
+  background-color: $dropdown-bg;
+}
+
+
+.calendar-dropdown {
+  color: $primary-text-color;
+  position: absolute;
+  z-index: 99;
+  background: $dropdown-bg;
+  box-shadow: 1px 1px 5px 0 $shadow-color;
+  user-select: none;
+  border-radius: 5px;
+  padding: 0;
+
+  .title {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .month-changer {
+    position: absolute;
+    cursor: pointer;
+    top: 20px;
+
+    &:hover {
+      position: absolute;
+      cursor: pointer;
+    }
+
+    &.prev-month {
+      left: 20px;
+      font-size: 1.5em;
+    }
+
+    &.next-month {
+      right: 20px;
+      font-size: 1.5em;
+    }
+
+    &.disabled {
+      color: $muted-color;
+      cursor: initial;
+    }
+  }
+
+  .layer-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .calendar-layer {
+      padding: 5px;
+      margin-top: 0;
+      border: none;
+
+      &:not(:last-of-type) {
+        margin-right: $layer-margin;
+      }
+
+      .month-name {
+        text-align: center;
+        font-size: 18px;
+        text-transform: capitalize;
+        padding: 10px;
+        color: $month-color;
+
+        .year {
+          color: $year-color;
+        }
+      }
+
+      .week {
+        display: table-row;
+
+        &.week-names {
+          color: #777;
+          font-size: 1em;
+
+          & > .day-container {
+            border-bottom: 1px solid $border-color;
+          }
+        }
+
+        & > .day-container {
+          display: table-cell;
+          text-align: center;
+        }
+
+        .day {
+          font-size: $day-font-size;
+          font-family: $day-font-family;
+          color: $day-color;
+          min-width: 31px;
+          min-height: 31px;
+          padding: 5px 5px;
+          text-align: center;
+
+          &.day-6,
+          &.day-7 {
+            color: $weekend-color;
+          }
+
+          &.selected {
+            background-color: $selected-bg;
+            font-weight: bold;
+            color: $selected-color;
+          }
+
+          &.today {
+            color: $today-color;
+            background-color: $today-bg;
+          }
+
+          &.locked {
+            color: $muted-color;
+            cursor: initial;
+          }
+
+          &:not(.locked):hover {
+            color: $day-hover-color;
+            background-color: $day-hover-bg;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

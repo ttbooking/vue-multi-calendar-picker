@@ -1,0 +1,7 @@
+.calendar-container {
+  @import "themes/default";
+}
+
+.calendar-container.dark {
+  @import "themes/dark";
+}

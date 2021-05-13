@@ -12,7 +12,13 @@
             <div class="week">
                 <div class="day-container" v-for="(day, index) in week">
                     <template v-if="day && day.enabled">
-                        <div class="day" :class="day.class" v-if="day" @click="chooseDate(day.value)">
+                        <div class="day"
+                             :class="day.class"
+                             v-if="day"
+                             @mouseover="() => $emit('dayHover', day.value)"
+                             @mouseleave="() => $emit('dayHover')"
+                             @click="chooseDate(day.value)"
+                        >
                             {{day.label}}
                             <slot name="day-sub" :date="day.value" :is-enabled="day.enabled"></slot>
                         </div>
@@ -32,6 +38,7 @@
 <script>
 import moment from 'moment';
 import 'moment/locale/ru';
+
 export default {
     name: "calendar-layer",
     props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current'],
@@ -115,73 +122,3 @@ export default {
 
 }
 </script>
-
-<style scoped>
-
-.calendar-layer:not(:last-of-type) {
-    margin-right: 30px;
-}
-.calendar-layer {
-    padding: 5px;
-    border: 1px solid lightgray;
-    margin-top: 20px;
-}
-.simple-dropdown .calendar-layer {
-    margin-top: 0;
-    border: none;
-}
-
-.day-container {
-    display: table-cell;
-    text-align: center;
-}
-.week-names > div {
-    border-bottom: 1px solid #ccc;
-}
-.week {
-    display: table-row;
-}
-.week-names {
-    color: #777;
-    font-size: 1em;
-}
-.day {
-    font-size: 1.1em;
-    font-family: monospace;
-    min-width: 31px;
-    min-height: 31px;
-    padding: 5px 5px;
-    text-align: center;
-}
-
-.day-6,.day-7 {
-    color: lightcoral;
-}
-.day.selected{
-    background-color: #3185ff;
-    font-weight: bold;
-    color: white;
-}
-.today{
-    background-color: #a8ffb6;
-}
-span.year {
-    color: #ccc;
-}
-.month-name {
-    text-align: center;
-    font-size: 18px;
-    text-transform: capitalize;
-    padding: 10px;
-}
-
-.day.locked{
-    color: #eee;
-    cursor: initial;
-    background: white;
-}
-.day:not(.locked):hover {
-    background-color: lightblue;
-    cursor: pointer;
-}
-</style>

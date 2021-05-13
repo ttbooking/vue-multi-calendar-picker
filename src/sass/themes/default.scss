@@ -1,0 +1,30 @@
+$dropdown-bg: white !default;
+$shadow-color: #999 !default;
+
+$layer-margin: 20px !default;
+
+$primary-text-color: #333 !default;
+
+$border-color: lighten($primary-text-color, 60%) !default;
+$muted-color: lighten($primary-text-color, 70%) !default;
+
+$month-color: $primary-text-color !default;
+$week-color: lighten($month-color, 50%) !default;
+$year-color: lighten($month-color, 50%) !default;
+
+$day-font-size: 1.1em !default;
+$day-font-family: monospace !default;
+$day-color: $primary-text-color !default;
+$day-hover-color: $primary-text-color !default;
+$day-hover-bg: lightblue !default;
+
+
+$weekend-color: lightcoral !default;
+
+$selected-bg: #3185ff !default;
+$selected-color: white !default;
+
+$today-color: white !default;
+$today-bg: #a8ffb6 !default;
+
+@import "../common";

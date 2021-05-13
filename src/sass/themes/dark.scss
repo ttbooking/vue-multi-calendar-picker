@@ -1,0 +1,30 @@
+$dropdown-bg: #444;
+$shadow-color: #999;
+
+$layer-margin: 20px;
+
+$primary-text-color: #eee;
+
+$border-color: darken($primary-text-color, 40%);
+$muted-color: darken($primary-text-color, 50%);
+
+$month-color: $primary-text-color;
+$week-color: lighten($month-color, 50%);
+$year-color: lighten($month-color, 50%);
+
+$day-font-size: 1.1em;
+$day-font-family: monospace;
+$day-color: $primary-text-color;
+$day-hover-color: $primary-text-color;
+$day-hover-bg: lighten($dropdown-bg, 20%);
+
+
+$weekend-color: lightcoral;
+
+$selected-bg: #3185ff;
+$selected-color: white;
+
+$today-color: black;
+$today-bg: lighten($dropdown-bg, 50%);
+
+@import "../common";
