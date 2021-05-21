@@ -10,7 +10,7 @@
                 readonly="readonly"
                 @focus="open"
                 @blur="close"
-                @mousedown.prevent.stop="focus"
+                @mousedown.prevent="focus"
                 ref="input"
             />
         </div>
@@ -86,8 +86,10 @@ export default {
                 return []
             }
         },
-        title: String,
-
+        title: {
+            type: String,
+            default: null,
+        },
     },
     created() {
         this.initCalendar();
@@ -215,9 +217,15 @@ export default {
             this.dateModel = payload;
             this.inputValue = this.dateModel.format(this.format);
             this.$emit('input', this.inputValue);
-            this.$emit('selected');
+            this.$emit('selected', this.activeLayers);
             this.close();
-        }
+        },
+        getActiveLayers() {
+            return this.activeLayers;
+        },
+        setActiveLayers(layers) {
+            this.$nextTick(() => this.activeLayers = layers);
+        },
     },
     watch: {
         min(){
