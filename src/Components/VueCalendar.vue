@@ -218,7 +218,7 @@ export default {
             this.inputValue = this.dateModel.format(this.format);
             this.$emit('input', this.inputValue);
             this.$emit('selected', this.activeLayers);
-            this.close();
+            this.blur();
         },
         getActiveLayers() {
             return this.activeLayers;
