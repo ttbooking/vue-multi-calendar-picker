@@ -41,7 +41,7 @@ import 'moment/locale/ru';
 
 export default {
     name: "calendar-layer",
-    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current'],
+    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'disabledDays'],
     data() {
         return {};
     },
@@ -85,7 +85,10 @@ export default {
                     dayClasses.push('selected');
                 }
 
-                if ((this.min && this.min.diff(momentDate, 'days') > 0) || (this.max && this.max.diff(momentDate, 'days') < 0)) {
+                if (this.disabledDays && this.disabledDays(momentDate)) {
+                    dayClasses.push('locked');
+                    disabled = true;
+                } else if ((this.min && this.min.diff(momentDate, 'days') > 0) || (this.max && this.max.diff(momentDate, 'days') < 0)) {
                     dayClasses.push('locked');
                     disabled = true;
                 }

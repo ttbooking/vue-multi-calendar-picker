@@ -35,6 +35,7 @@
                         :month="layer.month"
                         :year="layer.year"
                         :marked-range="markedDateRange"
+                        :disabled-days="disabledDays"
                         @select="emitSelection"
                         @dayHover="payload => $emit('dayHover', payload)"
                     >
@@ -88,6 +89,10 @@ export default {
         },
         title: {
             type: String,
+            default: null,
+        },
+        disabledDays: {
+            type: Function,
             default: null,
         },
     },
