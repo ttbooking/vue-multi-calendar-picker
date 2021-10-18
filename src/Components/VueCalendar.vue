@@ -113,10 +113,6 @@ export default {
             type: Function,
             default: null,
         },
-        withTime: {
-            type: Boolean,
-            default: false,
-        },
     },
     created() {
         this.initCalendar();
@@ -131,6 +127,9 @@ export default {
         };
     },
     computed: {
+        isWithTime() {
+            return this.format.match(/[Hhkms]/)
+        },
         isShowCalendar() {
             return !(this.isTimeSelected && this.isDateSelected);
         },
@@ -207,7 +206,7 @@ export default {
         open(){
             console.log('kuku epta');
             this.isDateSelected = false;
-            this.isTimeSelected = !this.withTime;
+            this.isTimeSelected = !this.isWithTime;
         },
         close(){
             this.isDateSelected = true;
@@ -254,7 +253,7 @@ export default {
                 this.blur();
             } else {
                 this.isDateSelected = true;
-                if (!this.withTime) {
+                if (!this.isWithTime) {
                     this.blur();
                 }
             }

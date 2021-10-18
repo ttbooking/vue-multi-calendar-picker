@@ -21,7 +21,6 @@
             <p>With timepicker</p>
             <label>
                 <vue-calendar :calendars-count="1"
-                              :with-time="true"
                               v-model="model3"
                               title="SelectDate"
                               time-title="SelectTime"
