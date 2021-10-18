@@ -1,5 +1,5 @@
 <template>
-    <div class="simple-picker" @wheel="wheelHandler">
+    <div class="simple-picker" @wheel.prevent.stop="wheelHandler">
         <div class="action mega-plus" @click="megaIncrease"><i class="fa fa-angle-double-up"></i></div>
         <div class="action plus" @click="increase"><i class="fa fa-angle-up"></i></div>
         <slot>

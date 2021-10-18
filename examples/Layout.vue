@@ -28,6 +28,18 @@
                 />
             </label>
         </div>
+        <div>
+            <h2>Example 4</h2>
+            <p>With timepicker only hours and minutes</p>
+            <label>
+                <vue-calendar :calendars-count="1"
+                              v-model="model4"
+                              title="SelectDate"
+                              time-title="SelectTime"
+                              format="DD.MM.YYYY HH:mm"
+                />
+            </label>
+        </div>
     </div>
 </template>
 
@@ -46,6 +58,7 @@ export default {
             model1: '',
             model2: '',
             model3: '',
+            model4: '',
         };
     },
 }

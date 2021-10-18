@@ -14,9 +14,7 @@
                 </simple-count-picker>
             </div>
 
-            <div class="separator">
-                <template v-if="needHours && needMinutes">:</template>
-            </div>
+            <div class="separator" v-if="needHours && needMinutes">:</div>
 
             <div class="selector minutes" v-if="needMinutes">
                 <simple-count-picker v-model="minutes" :min="0" :max="59">
@@ -24,9 +22,7 @@
                 </simple-count-picker>
             </div>
 
-            <div class="separator">
-                <template v-if="(needMinutes||needHours) && needSeconds">:</template>
-            </div>
+            <div class="separator" v-if="(needMinutes||needHours) && needSeconds">:</div>
 
             <div class="selector seconds" v-if="needSeconds">
                 <simple-count-picker v-model="seconds" :min="0" :max="59">
