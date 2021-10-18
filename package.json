@@ -1,6 +1,6 @@
 {
   "name": "vue-multi-calendar-picker",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "dependencies": {
     "@popperjs/core": "^2.10.2",
     "@ttbooking/vue-click-outside-directive": "^1.0.0",
