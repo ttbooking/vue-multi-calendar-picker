@@ -15,19 +15,20 @@
             />
         </div>
         <div class="calendar-dropdown simple-dropdown" v-if="isShowCalendar" @mousedown.prevent="">
-            <div class="action-buttons" v-if="isShowActionButtons">
+            <div class="date-picker-container" v-if="!isDateSelected">
+                <div class="action-buttons" v-if="isShowActionButtons">
                 <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}" @click="prevMonthView">
-                    <i class="fa fa-chevron-left"></i>
+                    <slot name="previousSign"><i class="fa fa-chevron-left"></i></slot>
                 </div>
                 <div class="month-changer next-month" :class="{'disabled': !checkAllowNext()}" @click="nextMonthView">
-                    <i class="fa fa-chevron-right"></i>
+                    <slot name="nextSign"><i class="fa fa-chevron-right"></i></slot>
                 </div>
             </div>
-            <slot name="title" v-if="title">
-                <div class="title">{{title}}</div>
-            </slot>
-            <div class="layer-container">
-                <template v-for="layer in activeLayers">
+                <slot name="title" v-if="title">
+                    <div class="title">{{title}}</div>
+                </slot>
+                <div class="layer-container">
+                <template v-for="(layer, index) in activeLayers">
                     <calendar-layer
                         :min="limitMin"
                         :current="dateModel"
@@ -36,7 +37,9 @@
                         :year="layer.year"
                         :marked-range="markedDateRange"
                         :disabled-days="disabledDays"
-                        @select="emitSelection"
+                        :key="index"
+                        v-model="dateModel"
+                        @select="selectHandler"
                         @dayHover="payload => $emit('dayHover', payload)"
                     >
                         <template v-slot:day-sub="params">
@@ -44,6 +47,16 @@
                         </template>
                     </calendar-layer>
                 </template>
+            </div>
+            </div>
+            <div class="time-picker-container" v-else-if="!isTimeSelected">
+                <time-picker v-model="dateModel" :format="format" @close="selectHandler(true)">
+                    <template v-slot:title>
+                        <slot name="time-title" v-if="timeTitle">
+                            <span class="title" v-text="timeTitle"></span>
+                        </slot>
+                    </template>
+                </time-picker>
             </div>
         </div>
     </div>
@@ -53,8 +66,9 @@
 import ClickOutsideDirective from '@ttbooking/vue-click-outside-directive';
 import CalendarLayer from "./CalendarLayer";
 import moment from 'moment';
+import TimePicker from "@/Components/TimePicker";
 export default {
-    components: {CalendarLayer},
+    components: {TimePicker, CalendarLayer},
     name: "vue-calendar",
     props: {
         value: String,
@@ -68,7 +82,7 @@ export default {
             default: 1,
         },
         inputClass: {
-            type: String|Object,
+            type: [Object, String],
             default() {
                 return 'form-control'
             }
@@ -91,9 +105,17 @@ export default {
             type: String,
             default: null,
         },
+        timeTitle: {
+            type: String,
+            default: null,
+        },
         disabledDays: {
             type: Function,
             default: null,
+        },
+        withTime: {
+            type: Boolean,
+            default: false,
         },
     },
     created() {
@@ -104,21 +126,25 @@ export default {
             inputValue: this.value,
             dateModel: this.getDateModelFromValue(),
             activeLayers: [],
-            isShowCalendar: false,
+            isDateSelected: true,
+            isTimeSelected: true,
         };
     },
     computed: {
+        isShowCalendar() {
+            return !(this.isTimeSelected && this.isDateSelected);
+        },
         markedDateRange() {
             let range = [];
             if (this.markedRange && this.markedRange.length){
                 for (let i in this.markedRange) {
-                    if (this.markedRange.hasOwnProperty(i)) {
-                        range.push({
-                            start: moment(this.markedRange[i].period.start, this.format),
-                            end: moment(this.markedRange[i].period.end, this.format),
-                            class: this.markedRange[i].class,
-                        })
-                    }
+
+                    range.push({
+                        start: moment(this.markedRange[i].period.start, this.format),
+                        end: moment(this.markedRange[i].period.end, this.format),
+                        class: this.markedRange[i].class,
+                    })
+
                 }
             }
             return range;
@@ -175,13 +201,17 @@ export default {
             this.$emit('focus', this.activeLayers);
         },
         blur() {
-            this.$refs.input.blur();
+            //временный костыль, т.к. в месте использования не работает
+            setTimeout(() => this.$refs.input.blur() && console.log(this.isDateSelected));
         },
         open(){
-            this.isShowCalendar = true;
+            console.log('kuku epta');
+            this.isDateSelected = false;
+            this.isTimeSelected = !this.withTime;
         },
         close(){
-            this.isShowCalendar = false;
+            this.isDateSelected = true;
+            this.isTimeSelected = true;
         },
         toggle(){
             this.isShowCalendar ? this.close() : this.open();
@@ -218,12 +248,16 @@ export default {
                 this.$emit('layerChange', this.activeLayers)
             }
         },
-        emitSelection(payload) {
-            this.dateModel = payload;
-            this.inputValue = this.dateModel.format(this.format);
-            this.$emit('input', this.inputValue);
-            this.$emit('selected', this.activeLayers);
-            this.blur();
+        selectHandler(isTime = false) {
+            if (isTime) {
+                this.isTimeSelected = true;
+                this.blur();
+            } else {
+                this.isDateSelected = true;
+                if (!this.withTime) {
+                    this.blur();
+                }
+            }
         },
         getActiveLayers() {
             return this.activeLayers;
@@ -249,6 +283,11 @@ export default {
         inputValue() {
             this.$emit('input', this.inputValue)
         },
+        dateModel() {
+            console.log('some');
+            this.inputValue = this.dateModel.format(this.format);
+            this.$emit('selected', this.activeLayers);
+        }
     },
     directives: {
         'click-outside' : ClickOutsideDirective,

@@ -4,13 +4,13 @@
             {{monthName}} <span class="year">{{year}}</span>
         </div>
         <div class="week week-names">
-            <div class="day-container" v-for="day in [1,2,3,4,5,6,7]">
-                {{getWeekDayName(day)}}
+            <div class="day-container" v-for="day in [1,2,3,4,5,6,7]" :key="day">
+                <span>{{getWeekDayName(day)}}</span>
             </div>
         </div>
         <template v-for="(week, index) in getCalendarLayer()">
-            <div class="week">
-                <div class="day-container" v-for="(day, index) in week">
+            <div class="week" :key="index">
+                <div class="day-container" v-for="(day, index) in week" :key="index">
                     <template v-if="day && day.enabled">
                         <div class="day"
                              :class="day.class"
@@ -46,19 +46,17 @@ export default {
         return {};
     },
     computed: {
-        monthCalendar() {
-            return this.getCalendarLayer();
-        },
         monthName() {
             return moment().month(this.month).format('MMMM')
         }
     },
     methods:{
-        emitSelect(date) {
-            this.$emit('select', date);
-        },
         getCalendarLayer(){
-            let momentDate = moment([this.year, this.month, 1]);
+            let momentDate = moment([this.year, this.month, 1])
+                .hours(this.current.hours())
+                .minutes(this.current.minutes())
+                .seconds(this.current.seconds())
+            ;
 
             let justCompareFormat = 'DD~MM~YYYY';
 
@@ -118,7 +116,8 @@ export default {
             return moment().isoWeekday(day).format('dd')
         },
         chooseDate(item) {
-            this.$emit('select', item)
+            this.$emit('input', item);
+            this.$emit('select');
         }
 
     }
