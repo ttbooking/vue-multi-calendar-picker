@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import SimpleCountPicker from "@/Components/SimpleCountPicker";
+import SimpleCountPicker from "./SimpleCountPicker";
 import moment from 'moment';
 export default {
     name: "TimePicker",
