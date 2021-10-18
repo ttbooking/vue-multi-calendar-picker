@@ -180,7 +180,7 @@ export default {
                 }
             }
         },
-        initCalendar(){
+        initCalendar() {
             let date = moment(moment().format(this.format), this.format);
             if (this.dateModel && this.dateModel.isValid()) {
                 if (this.min && this.min.length && this.dateModel < this.limitMin) {
@@ -201,10 +201,9 @@ export default {
         },
         blur() {
             //временный костыль, т.к. в месте использования не работает
-            setTimeout(() => this.$refs.input.blur() && console.log(this.isDateSelected));
+            setTimeout(() => this.$refs.input.blur());
         },
-        open(){
-            console.log('kuku epta');
+        open() {
             this.isDateSelected = false;
             this.isTimeSelected = !this.isWithTime;
         },
@@ -283,7 +282,6 @@ export default {
             this.$emit('input', this.inputValue)
         },
         dateModel() {
-            console.log('some');
             this.inputValue = this.dateModel.format(this.format);
             this.$emit('selected', this.activeLayers);
         }

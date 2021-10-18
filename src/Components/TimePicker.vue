@@ -2,7 +2,9 @@
     <div>
         <div class="text-center">
             <slot name="title"></slot>
-            <button type="button" class="btn text-muted btn-close btn-sm pull-right" @click="$emit('close')"></button>
+            <button type="button" class="btn text-muted btn-sm pull-right" @click="$emit('close')">
+                <i class="fa fa-times"></i>
+            </button>
         </div>
         <div class="time-picker layer-container">
 
