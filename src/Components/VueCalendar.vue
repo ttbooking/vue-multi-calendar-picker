@@ -282,7 +282,7 @@ export default {
             this.$emit('input', this.inputValue)
         },
         dateModel() {
-            this.inputValue = this.dateModel.format(this.format);
+            this.inputValue = this.dateModel.isValid() ? this.dateModel.format(this.format) : '';
             this.$emit('selected', this.activeLayers);
         }
     },
