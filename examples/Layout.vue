@@ -40,6 +40,19 @@
                 />
             </label>
         </div>
+        <div>
+            <h2>Example 5</h2>
+            <p>With min date</p>
+            <label>
+                <vue-calendar :calendars-count="1"
+                              v-model="model5"
+                              :min="model1"
+                              title="SelectDate"
+                              time-title="SelectTime"
+                              format="DD.MM.YYYY"
+                />
+            </label>
+        </div>
     </div>
 </template>
 
@@ -59,6 +72,7 @@ export default {
             model2: '',
             model3: '',
             model4: '',
+            model5: '',
         };
     },
 }

@@ -167,6 +167,7 @@ export default {
 
                 if (this.limitMin.diff(dateClone, 'month') > 0) {
                     dateClone.month(this.limitMin.month());
+                    dateClone.year(this.limitMin.year());
                 }
 
                 this.activeLayers = [];
@@ -190,6 +191,7 @@ export default {
                 }
                 date = this.dateModel;
             }
+
             this.initCalendarLayers(date);
         },
         getDateModelFromValue() {
