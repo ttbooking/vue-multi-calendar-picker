@@ -205,7 +205,6 @@ export default {
             //временный костыль, т.к. в месте использования не работает
             setTimeout(() => {
                 this.$refs.input.blur();
-                this.$emit('blur', this.activeLayers);
             });
         },
         open() {
@@ -215,6 +214,7 @@ export default {
         close(){
             this.isDateSelected = true;
             this.isTimeSelected = true;
+            this.$emit('close', this.activeLayers);
         },
         toggle(){
             this.isShowCalendar ? this.close() : this.open();
