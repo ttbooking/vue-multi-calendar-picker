@@ -203,7 +203,10 @@ export default {
         },
         blur() {
             //временный костыль, т.к. в месте использования не работает
-            setTimeout(() => this.$refs.input.blur());
+            setTimeout(() => {
+                this.$refs.input.blur();
+                this.$emit('blur', this.activeLayers);
+            });
         },
         open() {
             this.isDateSelected = false;
