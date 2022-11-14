@@ -212,9 +212,11 @@ export default {
             this.isTimeSelected = !this.isWithTime;
         },
         close(){
-            this.isDateSelected = true;
-            this.isTimeSelected = true;
-            this.$emit('close', this.activeLayers);
+            if (this.isShowCalendar) {
+                this.isDateSelected = true;
+                this.isTimeSelected = true;
+                this.$emit('close', this.activeLayers);
+            }
         },
         toggle(){
             this.isShowCalendar ? this.close() : this.open();
