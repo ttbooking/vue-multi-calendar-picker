@@ -1,12 +1,20 @@
 <template>
     <div class="simple-picker" @wheel.prevent.stop="wheelHandler">
-        <div class="action mega-plus" @click="megaIncrease"><i class="fa fa-angle-double-up"></i></div>
-        <div class="action plus" @click="increase"><i class="fa fa-angle-up"></i></div>
+        <div class="action mega-plus" @click="megaIncrease" :class="{disabled: !canMegaIncrease}">
+            <i class="fa fa-angle-double-up"></i>
+        </div>
+        <div class="action plus" @click="increase" :class="{disabled: !canIncrease}">
+            <i class="fa fa-angle-up"></i>
+        </div>
         <slot>
             <div class="value" v-text="model"></div>
         </slot>
-        <div class="action minus" @click="decrease"><i class="fa fa-angle-down"></i></div>
-        <div class="action mega-minus" @click="megaDecrease"><i class="fa fa-angle-double-down"></i></div>
+        <div class="action minus" @click="decrease" :class="{disabled: !canDecrease}">
+            <i class="fa fa-angle-down"></i>
+        </div>
+        <div class="action mega-minus" @click="megaDecrease" :class="{disabled: !canMegaDecrease}">
+            <i class="fa fa-angle-double-down"></i>
+        </div>
     </div>
 </template>
 
@@ -30,6 +38,20 @@ export default {
             model: this.value || 0
         };
     },
+    computed: {
+        canMegaIncrease() {
+            return this.model + 10 <= this.max;
+        },
+        canIncrease() {
+            return this.model + 1 <= this.max;
+        },
+        canMegaDecrease() {
+            return this.model - 10 >= this.min;
+        },
+        canDecrease() {
+            return this.model - 1 >= this.min;
+        },
+    },
     methods: {
         controlModel() {
             if (this.model < this.min) {
@@ -40,16 +62,24 @@ export default {
             }
         },
         megaIncrease() {
-            this.model += 10;
+            if (this.canMegaIncrease) {
+                this.model += 10;
+            }
         },
         increase() {
-            this.model ++;
+            if (this.canIncrease) {
+                this.model++;
+            }
         },
         decrease() {
-            this.model --;
+            if (this.canDecrease) {
+                this.model--;
+            }
         },
         megaDecrease() {
-            this.model -= 10;
+            if (this.canMegaDecrease) {
+                this.model -= 10;
+            }
         },
         wheelHandler(event) {
             event.wheelDelta < 0 ? this.decrease() : this.increase();

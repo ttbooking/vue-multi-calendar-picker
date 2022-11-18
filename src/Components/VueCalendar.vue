@@ -1,6 +1,6 @@
 <template>
     <div class="calendar-container" v-click-outside="close">
-        <div class="calendar-input">
+        <div class="">
             <input
                 title=""
                 :placeholder="placeholder"
@@ -50,7 +50,12 @@
             </div>
             </div>
             <div class="time-picker-container" v-else-if="!isTimeSelected">
-                <time-picker v-model="dateModel" :format="format" @close="selectHandler(true)">
+                <time-picker v-model="dateModel"
+                             :format="format"
+                             :min="limitMin"
+                             :max="limitMax"
+                             @close="selectHandler(true)"
+                >
                     <template v-slot:title>
                         <slot name="time-title" v-if="timeTitle">
                             <span class="title" v-text="timeTitle"></span>
@@ -289,6 +294,14 @@ export default {
             this.$emit('input', this.inputValue)
         },
         dateModel() {
+
+            if (this.limitMin && this.limitMin.isValid() && this.dateModel < this.limitMin) {
+                this.dateModel = moment(this.limitMin);
+            }
+            if (this.limitMax && this.limitMax.isValid() && this.dateModel > this.limitMax) {
+                this.dateModel = moment(this.limitMax);
+            }
+
             this.inputValue = this.dateModel.isValid() ? this.dateModel.format(this.format) : '';
             this.$emit('selected', this.activeLayers);
         }

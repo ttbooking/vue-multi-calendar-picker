@@ -147,11 +147,14 @@
   text-align: center;
   font-size: $day-font-size;
   padding: 3px 5px;
-  .action {
+  .action:not(.disabled) {
     color: $year-color;
     cursor: pointer;
     &:hover {
       color: $day-color;
     }
+  }
+  .action {
+    color: $muted-color;
   }
 }
