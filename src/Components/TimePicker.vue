@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import SimpleCountPicker from "./SimpleCountPicker";
+import SimpleCountPicker from "./SimpleCountPicker.vue";
 import moment from 'moment';
 export default {
     name: "TimePicker",
