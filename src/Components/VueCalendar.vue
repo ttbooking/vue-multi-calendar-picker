@@ -69,8 +69,8 @@
 
 <script>
 import ClickOutsideDirective from '@ttbooking/vue-click-outside-directive';
-import CalendarLayer from "./CalendarLayer";
-import TimePicker from "./TimePicker";
+import CalendarLayer from "./CalendarLayer.vue";
+import TimePicker from "./TimePicker.vue";
 import moment from 'moment';
 export default {
     components: {TimePicker, CalendarLayer},
