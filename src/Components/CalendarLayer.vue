@@ -37,7 +37,7 @@
 
 <script>
 import moment from 'moment';
-import 'moment/locale/ru';
+import 'moment/dist/locale/ru';
 
 export default {
     name: "calendar-layer",
