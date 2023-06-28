@@ -65,6 +65,16 @@ export default {
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
 
+            let minDate = moment(this.min)
+                .hours(this.current.hours())
+                .minutes(this.current.minutes())
+                .seconds(this.current.seconds());
+
+            let maxDate = moment(this.max)
+                .hours(this.current.hours())
+                .minutes(this.current.minutes())
+                .seconds(this.current.seconds());
+
             let lastWeek = +momentDate.isoWeek();
             let currentWeek = Object.assign({}, week);
             while (+momentDate.month() === +this.month) {
@@ -86,7 +96,7 @@ export default {
                 if (this.disabledDays && this.disabledDays(momentDate)) {
                     dayClasses.push('locked');
                     disabled = true;
-                } else if ((this.min && this.min.diff(momentDate, 'days') > 0) || (this.max && this.max.diff(momentDate, 'days') < 0)) {
+                } else if ((minDate?.diff(momentDate, 'days') > 0) || (maxDate?.diff(momentDate, 'days') < 0)) {
                     dayClasses.push('locked');
                     disabled = true;
                 }

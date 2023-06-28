@@ -9,7 +9,7 @@
         <div class="time-picker layer-container">
 
             <div class="selector hours" v-if="needHours">
-                <simple-count-picker v-model="hours" :min="minHours" :max="maxHours">
+                <simple-count-picker v-model="hours" :min="getMinHours()" :max="getMaxHours()">
                     <div class="value" v-text="model.format('HH')"></div>
                 </simple-count-picker>
             </div>
@@ -17,7 +17,7 @@
             <div class="separator" v-if="needHours && needMinutes">:</div>
 
             <div class="selector minutes" v-if="needMinutes">
-                <simple-count-picker v-model="minutes" :min="minMinutes" :max="maxMinutes">
+                <simple-count-picker v-model="minutes" :min="getMinMinutes()" :max="getMaxMinutes()">
                     <div class="value" v-text="model.format('mm')"></div>
                 </simple-count-picker>
             </div>
@@ -25,7 +25,7 @@
             <div class="separator" v-if="(needMinutes||needHours) && needSeconds">:</div>
 
             <div class="selector seconds" v-if="needSeconds">
-                <simple-count-picker v-model="seconds" :min="minSeconds" :max="maxSeconds">
+                <simple-count-picker v-model="seconds" :min="getMinSeconds()" :max="getMaxSeconds()">
                     <div class="value" v-text="model.format('ss')"></div>
                 </simple-count-picker>
             </div>
@@ -45,6 +45,9 @@ export default {
     data() {
         return {
             model: this.value && this.value.isValid() ? this.value.clone() : moment(),
+            hours: parseInt(this.value?.format('HH')) || 0,
+            minutes: parseInt(this.value?.format('mm')) || 0,
+            seconds: parseInt(this.value?.format('ss')) || 0
         };
     },
     computed: {
@@ -57,85 +60,55 @@ export default {
         needSeconds() {
             return this.format.match(/[s]/);
         },
-        hours: {
-            get() {
-                return parseInt(this.model.format('HH'));
-            },
-            set(value) {
-                this.model.hours(value);
-                this.emitChange();
-            },
-        },
-        minutes: {
-            get() {
-                return parseInt(this.model.format('mm'));
-            },
-            set(value) {
-                this.model.minutes(value);
-                this.emitChange();
-            },
-        },
-        seconds: {
-            get() {
-                return parseInt(this.model.format('ss'));
-            },
-            set(value) {
-                this.model.seconds(value);
-                this.emitChange();
-            },
-        },
-        minHours() {
-            if (this.min && this.model.format('DD.MM.YYYY') === this.min.format('DD.MM.YYYY')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.min.format('H'));
-            }
-            return 0;
-        },
-        minMinutes() {
-            if (this.min && this.model.format('DD.MM.YYYY HH') === this.min.format('DD.MM.YYYY HH')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.min.format('m'));
-            }
-            return 0;
-        },
-        minSeconds() {
-            if (this.min && this.model.format('DD.MM.YYYY HH:mm') === this.min.format('DD.MM.YYYY HH:mm')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.min.format('s'));
-            }
-            return 0;
-        },
-        maxHours() {
-            if (this.max && this.model.format('DD.MM.YYYY') === this.max.format('DD.MM.YYYY')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.max.format('H'));
-            }
-            return 23;
-        },
-        maxMinutes() {
-            if (this.max && this.model.format('DD.MM.YYYY HH') === this.max.format('DD.MM.YYYY HH')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.max.format('m'));
-            }
-            return 59;
-        },
-        maxSeconds() {
-            if (this.max && this.model.format('DD.MM.YYYY HH:mm') === this.max.format('DD.MM.YYYY HH:mm')) {
-                // Если день текущий есть минимальный день
-                return parseInt(this.max.format('s'));
-            }
-            return 59;
-        },
     },
     methods: {
+        currentDateIsMin(compareFormat) {
+            return this.min && this.model.format(compareFormat) === this.min.format(compareFormat);
+        },
+        currentDateIsMax(compareFormat) {
+            return this.max && this.model.format(compareFormat) === this.max.format(compareFormat);
+        },
+        getMinHours() {
+            return this.currentDateIsMin('DD.MM.YYYY') ? parseInt(this.min.format('HH')) : 0;
+        },
+        getMinMinutes() {
+            return this.currentDateIsMin('DD.MM.YYYY HH') ? parseInt(this.min.format('mm')) : 0;
+        },
+        getMinSeconds() {
+            return this.currentDateIsMin('DD.MM.YYYY HH:mm') ? parseInt(this.min.format('ss')) : 0;
+        },
+        getMaxHours() {
+            return this.currentDateIsMax('DD.MM.YYYY') ? parseInt(this.max.format('HH')) : 23;
+        },
+        getMaxMinutes() {
+            return this.currentDateIsMax('DD.MM.YYYY HH') ? parseInt(this.max.format('mm')) : 59;
+        },
+        getMaxSeconds() {
+            return this.currentDateIsMax('DD.MM.YYYY HH:mm') ? parseInt(this.max.format('ss')) : 59;
+        },
         emitChange() {
             this.$emit('input', this.model.clone())
         },
     },
     watch: {
-        model() {
+        hours() {
+            this.model.hours(this.hours);
             this.emitChange();
         },
+        minutes() {
+            this.model.minutes(this.minutes);
+            this.emitChange();
+        },
+        seconds() {
+            this.model.seconds(this.seconds);
+            this.emitChange();
+        },
+        value() {
+            this.model = this.value.clone();
+            this.hours = parseInt(this.model?.format('HH')) || 0;
+            this.minutes = parseInt(this.model?.format('mm')) || 0;
+            this.seconds = parseInt(this.model?.format('ss')) || 0;
+        }
     }
 }
 </script>
