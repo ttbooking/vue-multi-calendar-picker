@@ -1,2 +1,2 @@
 # vue-multi-calendar-picker
-CalendarPicker based on momentjs
+CalendarPicker based on dayjs

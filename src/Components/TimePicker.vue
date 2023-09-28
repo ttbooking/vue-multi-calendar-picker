@@ -35,7 +35,7 @@
 
 <script>
 import SimpleCountPicker from "./SimpleCountPicker.vue";
-import moment from 'moment';
+import dayjs from 'dayjs';
 export default {
     name: "TimePicker",
     components: {SimpleCountPicker},
@@ -44,7 +44,7 @@ export default {
     ],
     data() {
         return {
-            model: this.value && this.value.isValid() ? this.value.clone() : moment(),
+            model: this.value && this.value.isValid() ? this.value : dayjs(),
             hours: parseInt(this.value?.format('HH')) || 0,
             minutes: parseInt(this.value?.format('mm')) || 0,
             seconds: parseInt(this.value?.format('ss')) || 0
@@ -87,24 +87,23 @@ export default {
             return this.currentDateIsMax('DD.MM.YYYY HH:mm') ? parseInt(this.max.format('ss')) : 59;
         },
         emitChange() {
-            this.$emit('input', this.model.clone())
+            this.$emit('input', this.model)
         },
     },
     watch: {
         hours() {
-            this.model.hours(this.hours);
+            this.model = this.model.hour(this.hours);
             this.emitChange();
         },
         minutes() {
-            this.model.minutes(this.minutes);
+            this.model = this.model.minute(this.minutes);
             this.emitChange();
         },
         seconds() {
-            this.model.seconds(this.seconds);
+            this.model = this.model.second(this.seconds);
             this.emitChange();
         },
         value() {
-            this.model = this.value.clone();
             this.hours = parseInt(this.model?.format('HH')) || 0;
             this.minutes = parseInt(this.model?.format('mm')) || 0;
             this.seconds = parseInt(this.model?.format('ss')) || 0;

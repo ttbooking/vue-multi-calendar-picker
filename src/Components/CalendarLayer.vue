@@ -1,11 +1,11 @@
 <template>
     <div class="calendar-layer">
         <div class="month-name">
-            {{monthName}} <span class="year">{{year}}</span>
+            {{ monthName }} <span class="year">{{ year }}</span>
         </div>
         <div class="week week-names">
             <div class="day-container" v-for="day in [1,2,3,4,5,6,7]" :key="day">
-                <span>{{getWeekDayName(day)}}</span>
+                <span>{{ getWeekDayName(day) }}</span>
             </div>
         </div>
         <template v-for="(week, index) in getCalendarLayer()">
@@ -19,13 +19,13 @@
                              @mouseleave="() => $emit('dayHover')"
                              @click="chooseDate(day.value)"
                         >
-                            {{day.label}}
+                            {{ day.label }}
                             <slot name="day-sub" :date="day.value" :is-enabled="day.enabled"></slot>
                         </div>
                     </template>
                     <template v-else>
                         <div class="day" :class="day.class" v-if="day">
-                            {{day.label}}
+                            {{ day.label }}
                             <slot name="day-sub" :date="day.value" :is-enabled="day.enabled"></slot>
                         </div>
                     </template>
@@ -36,8 +36,7 @@
 </template>
 
 <script>
-import moment from 'moment';
-import 'moment/dist/locale/ru';
+import dayjs from '../setup.dayjs.js';
 
 export default {
     name: "calendar-layer",
@@ -47,33 +46,36 @@ export default {
     },
     computed: {
         monthName() {
-            return moment().month(this.month).format('MMMM')
+            return dayjs().month(this.month).format('MMMM')
         }
     },
-    methods:{
-        getCalendarLayer(){
-            let momentDate = moment([this.year, this.month, 1])
-                .hours(this.current.hours())
-                .minutes(this.current.minutes())
-                .seconds(this.current.seconds())
+    methods: {
+        getCalendarLayer() {
+            let momentDate = dayjs()
+                .year(this.year)
+                .month(this.month)
+                .date(1)
+                .hour(this.current.hour() || 0)
+                .minute(this.current.minute() || 0)
+                .second(this.current.second() || 0)
             ;
 
             let justCompareFormat = 'DD~MM~YYYY';
 
-            let nowTime = moment().format(justCompareFormat);
+            let nowTime = dayjs().format(justCompareFormat);
 
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
 
-            let minDate = moment(this.min)
-                .hours(this.current.hours())
-                .minutes(this.current.minutes())
-                .seconds(this.current.seconds());
+            let minDate = dayjs(this.min)
+                .hour(this.current.hour())
+                .minute(this.current.minute())
+                .second(this.current.second());
 
-            let maxDate = moment(this.max)
-                .hours(this.current.hours())
-                .minutes(this.current.minutes())
-                .seconds(this.current.seconds());
+            let maxDate = dayjs(this.max)
+                .hour(this.current.hour())
+                .minute(this.current.minute())
+                .second(this.current.second());
 
             let lastWeek = +momentDate.isoWeek();
             let currentWeek = Object.assign({}, week);
@@ -84,12 +86,12 @@ export default {
                 }
                 let disabled = false;
                 let dayClasses = [];
-                dayClasses.push('day-'+momentDate.isoWeekday());
+                dayClasses.push('day-' + momentDate.isoWeekday());
 
                 if (nowTime === momentDate.format(justCompareFormat)) {
                     dayClasses.push('today')
                 }
-                if (this.current.format(justCompareFormat) === momentDate.format(justCompareFormat)){
+                if (this.current.format(justCompareFormat) === momentDate.format(justCompareFormat)) {
                     dayClasses.push('selected');
                 }
 
@@ -112,18 +114,18 @@ export default {
 
                 currentWeek[momentDate.isoWeekday()] = {
                     label: momentDate.format('D'),
-                    value: momentDate.clone(),
+                    value: momentDate,
                     class: dayClasses.join(' '),
                     enabled: !disabled,
                 };
                 lastWeek = +momentDate.isoWeek();
-                momentDate.add(1, 'days');
+                momentDate = momentDate.add(1, 'day');
             }
             weeks.push(currentWeek);
             return weeks;
         },
         getWeekDayName(day) {
-            return moment().isoWeekday(day).format('dd')
+            return dayjs().isoWeekday(day).format('dd');
         },
         chooseDate(item) {
             this.$emit('input', item);

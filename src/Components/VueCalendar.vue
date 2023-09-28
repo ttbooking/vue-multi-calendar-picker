@@ -8,6 +8,7 @@
                 class="calendar-input"
                 v-model="inputValue"
                 readonly="readonly"
+                :disabled="disabled"
                 @focus="open"
                 @blur="close"
                 @mousedown.prevent="focus"
@@ -71,7 +72,8 @@
 import ClickOutsideDirective from '@ttbooking/vue-click-outside-directive';
 import CalendarLayer from "./CalendarLayer.vue";
 import TimePicker from "./TimePicker.vue";
-import moment from 'moment';
+import dayjs from '../setup.dayjs.js';
+
 export default {
     components: {TimePicker, CalendarLayer},
     name: "vue-calendar",
@@ -118,6 +120,10 @@ export default {
             type: Function,
             default: null,
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        }
     },
     created() {
         this.initCalendar();
@@ -144,8 +150,8 @@ export default {
                 for (let i in this.markedRange) {
 
                     range.push({
-                        start: moment(this.markedRange[i].period.start, this.format),
-                        end: moment(this.markedRange[i].period.end, this.format),
+                        start: dayjs(this.markedRange[i].period.start, this.format),
+                        end: dayjs(this.markedRange[i].period.end, this.format),
                         class: this.markedRange[i].class,
                     })
 
@@ -154,10 +160,10 @@ export default {
             return range;
         },
         limitMin(){
-            return moment(this.min, this.format);
+            return dayjs(this.min, this.format);
         },
         limitMax(){
-            return moment(this.max, this.format);
+            return dayjs(this.max, this.format);
         },
         isShowActionButtons() {
             return this.checkAllowPrev() || this.checkAllowNext();
@@ -166,13 +172,12 @@ export default {
     methods: {
         initCalendarLayers(date) {
             if (date && date.isValid()) {
-                let dateClone = date.clone();
-
-                dateClone = moment(dateClone.endOf('month').format(this.format), this.format);
+                let dateClone = date.endOf('month');
 
                 if (this.limitMin.diff(dateClone, 'month') > 0) {
-                    dateClone.month(this.limitMin.month());
-                    dateClone.year(this.limitMin.year());
+                    dateClone = dateClone.month(this.limitMin.month())
+                        .year(this.limitMin.year())
+                    ;
                 }
 
                 this.activeLayers = [];
@@ -180,14 +185,14 @@ export default {
                     this.activeLayers.push({
                         month: dateClone.month(),
                         year: dateClone.year(),
-                        moment: moment(dateClone.format(this.format), this.format),
+                        moment: dateClone,
                     });
-                    dateClone.add(1, 'month');
+                    dateClone = dateClone.add(1, 'month');
                 }
             }
         },
         initCalendar() {
-            let date = moment(moment().format(this.format), this.format);
+            let date = dayjs();
             if (this.dateModel && this.dateModel.isValid()) {
                 if (this.min && this.min.length && this.dateModel < this.limitMin) {
                     this.inputValue = this.min;
@@ -200,7 +205,7 @@ export default {
             this.initCalendarLayers(date);
         },
         getDateModelFromValue() {
-            return moment(this.inputValue, this.format);
+            return dayjs(this.inputValue, this.format);
         },
         focus() {
             this.$refs.input.focus();
@@ -228,32 +233,32 @@ export default {
         },
         checkAllowPrev() {
             if (this.limitMin.isValid()) {
-                let firstMonth = this.activeLayers[0].moment.clone();
-                firstMonth.subtract(1, 'month').endOf('month');
+                let firstMonth = this.activeLayers[0].moment;
+                firstMonth = firstMonth.subtract(1, 'month').endOf('month');
                 return firstMonth >= this.limitMin;
             }
             return true;
         },
         checkAllowNext() {
             if (this.limitMax.isValid()) {
-                let lastMonth = this.activeLayers[this.activeLayers.length - 1].moment.clone();
-                lastMonth.add(1, 'month').startOf('month');
+                let lastMonth = this.activeLayers[this.activeLayers.length - 1].moment;
+                lastMonth = lastMonth.add(1, 'month').startOf('month');
                 return this.limitMax >= lastMonth;
             }
             return true;
         },
         prevMonthView() {
             if (this.checkAllowPrev()) {
-                let firstMonth = this.activeLayers[0].moment.clone();
-                firstMonth.subtract(1, 'month');
+                let firstMonth = this.activeLayers[0].moment;
+                firstMonth = firstMonth.subtract(1, 'month');
                 this.initCalendarLayers(firstMonth);
                 this.$emit('layerChange', this.activeLayers)
             }
         },
         nextMonthView() {
             if (this.checkAllowNext()) {
-                let lastMonth = this.activeLayers[0].moment.clone();
-                lastMonth.add(1, 'month'); //перескакиваем, плавно по одному месяцу
+                let lastMonth = this.activeLayers[0].moment;
+                lastMonth = lastMonth.add(1, 'month'); //перескакиваем, плавно по одному месяцу
                 this.initCalendarLayers(lastMonth);
                 this.$emit('layerChange', this.activeLayers)
             }
@@ -294,15 +299,23 @@ export default {
             this.$emit('input', this.inputValue)
         },
         dateModel() {
+            if (this.dateModel.isValid()) {
 
-            if (this.limitMin && this.limitMin.isValid() && this.dateModel < this.limitMin) {
-                this.dateModel = moment(this.limitMin);
-            }
-            if (this.limitMax && this.limitMax.isValid() && this.dateModel > this.limitMax) {
-                this.dateModel = moment(this.limitMax);
+                if (this.limitMin && this.limitMin.isValid() && this.dateModel < this.limitMin) {
+                    this.dateModel = this.limitMin;
+                }
+                if (this.limitMax && this.limitMax.isValid() && this.dateModel > this.limitMax) {
+                    this.dateModel = this.limitMax;
+                }
+
+                let formattedDate = this.dateModel.format(this.format);
+                if (formattedDate !== this.inputValue) {
+                    this.inputValue = formattedDate;
+                }
+            } else if (this.inputValue !== '') {
+                this.inputValue = '';
             }
 
-            this.inputValue = this.dateModel.isValid() ? this.dateModel.format(this.format) : '';
             this.$emit('selected', this.activeLayers);
         }
     },

@@ -78,6 +78,22 @@
                 />
             </label>
         </div>
+        <div>
+            <h2>Example 7</h2>
+            <p>Disabled</p>
+            <label>
+                <vue-calendar :calendars-count="1"
+                              :class="theme"
+                              v-model="model6"
+                              :min="model4"
+                              :max="model3"
+                              :disabled="true"
+                              title="SelectDate"
+                              time-title="SelectTime"
+                              format="DD.MM.YYYY HH:mm"
+                />
+            </label>
+        </div>
     </div>
 </template>
 
