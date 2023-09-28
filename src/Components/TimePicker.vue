@@ -35,7 +35,7 @@
 
 <script>
 import SimpleCountPicker from "./SimpleCountPicker.vue";
-import dayjs from 'dayjs';
+import dayjs from '../setup.dayjs.js';
 export default {
     name: "TimePicker",
     components: {SimpleCountPicker},
