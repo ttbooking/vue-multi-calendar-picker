@@ -2,7 +2,9 @@
 .calendar-input {
   width: 100%;
   color: $primary-text-color;
-  background-color: $dropdown-bg;
+  &:not(:disabled) {
+    background-color: $dropdown-bg;
+  }
 }
 
 
