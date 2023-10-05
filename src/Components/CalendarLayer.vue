@@ -51,13 +51,19 @@ export default {
     },
     methods: {
         getCalendarLayer() {
+
+            let currentHour = this.current.hour() || 0;
+            let currentMinute = this.current.minute() || 0;
+            let currentSeconds = this.current.second() || 0;
+
             let momentDate = dayjs()
                 .year(this.year)
                 .month(this.month)
                 .date(1)
-                .hour(this.current.hour() || 0)
-                .minute(this.current.minute() || 0)
-                .second(this.current.second() || 0)
+                .hour(currentHour)
+                .minute(currentMinute)
+                .second(currentSeconds)
+                .millisecond(0)
             ;
 
             let justCompareFormat = 'DD~MM~YYYY';
@@ -67,15 +73,15 @@ export default {
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
 
-            let minDate = dayjs(this.min)
-                .hour(this.current.hour())
-                .minute(this.current.minute())
-                .second(this.current.second());
+            let minDate = this.min
+                .hour(currentHour)
+                .minute(currentMinute)
+                .second(currentSeconds);
 
-            let maxDate = dayjs(this.max)
-                .hour(this.current.hour())
-                .minute(this.current.minute())
-                .second(this.current.second());
+            let maxDate = this.max
+                .hour(currentHour)
+                .minute(currentMinute)
+                .second(currentSeconds);
 
             let lastWeek = +momentDate.isoWeek();
             let currentWeek = Object.assign({}, week);
@@ -106,7 +112,7 @@ export default {
 
                 if (this.markedRange.length) {
                     for (let range of this.markedRange) {
-                        if (range.start.diff(momentDate, 'days') <= 0 && range.end.diff(momentDate, 'days') >= 0) {
+                        if (range.start.diff(momentDate, 'days', true) <= 0 && range.end.diff(momentDate, 'days', true) >= 0) {
                             dayClasses.push(range.class)
                         }
                     }

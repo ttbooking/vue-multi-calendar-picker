@@ -92,6 +92,12 @@ export default {
         model() {
             this.controlModel();
             this.$emit('input', this.model);
+        },
+        max() {
+            this.controlModel();
+        },
+        min() {
+            this.controlModel();
         }
     }
 }

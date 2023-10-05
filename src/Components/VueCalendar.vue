@@ -18,37 +18,39 @@
         <div class="calendar-dropdown simple-dropdown" v-if="isShowCalendar" @mousedown.prevent="">
             <div class="date-picker-container" v-if="!isDateSelected">
                 <div class="action-buttons" v-if="isShowActionButtons">
-                <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}" @click="prevMonthView">
-                    <slot name="previousSign"><i class="fa fa-chevron-left"></i></slot>
+                    <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}"
+                         @click="prevMonthView">
+                        <slot name="previousSign"><i class="fa fa-chevron-left"></i></slot>
+                    </div>
+                    <div class="month-changer next-month" :class="{'disabled': !checkAllowNext()}"
+                         @click="nextMonthView">
+                        <slot name="nextSign"><i class="fa fa-chevron-right"></i></slot>
+                    </div>
                 </div>
-                <div class="month-changer next-month" :class="{'disabled': !checkAllowNext()}" @click="nextMonthView">
-                    <slot name="nextSign"><i class="fa fa-chevron-right"></i></slot>
-                </div>
-            </div>
                 <slot name="title" v-if="title">
-                    <div class="title">{{title}}</div>
+                    <div class="title">{{ title }}</div>
                 </slot>
                 <div class="layer-container">
-                <template v-for="(layer, index) in activeLayers">
-                    <calendar-layer
-                        :min="limitMin"
-                        :current="dateModel"
-                        :max="limitMax"
-                        :month="layer.month"
-                        :year="layer.year"
-                        :marked-range="markedDateRange"
-                        :disabled-days="disabledDays"
-                        :key="index"
-                        v-model="dateModel"
-                        @select="selectHandler"
-                        @dayHover="payload => $emit('dayHover', payload)"
-                    >
-                        <template v-slot:day-sub="params">
-                            <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
-                        </template>
-                    </calendar-layer>
-                </template>
-            </div>
+                    <template v-for="(layer, index) in activeLayers">
+                        <calendar-layer
+                            :min="limitMin"
+                            :current="dateModel"
+                            :max="limitMax"
+                            :month="layer.month"
+                            :year="layer.year"
+                            :marked-range="markedDateRange"
+                            :disabled-days="disabledDays"
+                            :key="index"
+                            v-model="dateModel"
+                            @select="selectHandler"
+                            @dayHover="payload => $emit('dayHover', payload)"
+                        >
+                            <template v-slot:day-sub="params">
+                                <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
+                            </template>
+                        </calendar-layer>
+                    </template>
+                </div>
             </div>
             <div class="time-picker-container" v-else-if="!isTimeSelected">
                 <time-picker v-model="dateModel"
@@ -94,11 +96,11 @@ export default {
                 return 'form-control'
             }
         },
-        min :{
+        min: {
             type: String,
             default: null
         },
-        max :{
+        max: {
             type: String,
             default: null
         },
@@ -146,12 +148,12 @@ export default {
         },
         markedDateRange() {
             let range = [];
-            if (this.markedRange && this.markedRange.length){
+            if (this.markedRange && this.markedRange.length) {
                 for (let i in this.markedRange) {
 
                     range.push({
-                        start: dayjs(this.markedRange[i].period.start, this.format),
-                        end: dayjs(this.markedRange[i].period.end, this.format),
+                        start: dayjs(this.markedRange[i].period.start, this.format).startOf('day'),
+                        end: dayjs(this.markedRange[i].period.end, this.format).endOf('day'),
                         class: this.markedRange[i].class,
                     })
 
@@ -159,10 +161,10 @@ export default {
             }
             return range;
         },
-        limitMin(){
+        limitMin() {
             return dayjs(this.min, this.format);
         },
-        limitMax(){
+        limitMax() {
             return dayjs(this.max, this.format);
         },
         isShowActionButtons() {
@@ -192,15 +194,15 @@ export default {
             }
         },
         initCalendar() {
-            let date = dayjs();
-            if (this.dateModel && this.dateModel.isValid()) {
-                if (this.min && this.min.length && this.dateModel < this.limitMin) {
-                    this.inputValue = this.min;
-                    this.$emit('input', this.inputValue);
-                    this.dateModel = this.getDateModelFromValue();
-                }
+            let date = this.dateModel?.isValid() ? this.dateModel : dayjs();
+
+            if (this.min && this.min.length && date < this.limitMin) {
+                this.inputValue = this.min;
+                this.$emit('input', this.inputValue);
+                this.dateModel = this.getDateModelFromValue();
                 date = this.dateModel;
             }
+
 
             this.initCalendarLayers(date);
         },
@@ -221,14 +223,14 @@ export default {
             this.isDateSelected = false;
             this.isTimeSelected = !this.isWithTime;
         },
-        close(){
+        close() {
             if (this.isShowCalendar) {
                 this.isDateSelected = true;
                 this.isTimeSelected = true;
                 this.$emit('close', this.activeLayers);
             }
         },
-        toggle(){
+        toggle() {
             this.isShowCalendar ? this.close() : this.open();
         },
         checkAllowPrev() {
@@ -282,14 +284,14 @@ export default {
         },
     },
     watch: {
-        min(){
+        min() {
             this.initCalendar();
         },
-        max(){
+        max() {
             this.initCalendar();
         },
-        value:{
-            handler(){
+        value: {
+            handler() {
                 this.inputValue = this.value;
                 this.dateModel = this.getDateModelFromValue();
             },
@@ -320,7 +322,7 @@ export default {
         }
     },
     directives: {
-        'click-outside' : ClickOutsideDirective,
+        'click-outside': ClickOutsideDirective,
     }
 }
 </script>
