@@ -1,4 +1,3 @@
-
 .calendar-input {
   width: 100%;
   color: $primary-text-color;
@@ -17,10 +16,19 @@
   user-select: none;
   border-radius: 5px;
   padding: 0;
+  font-family: monospace;
+  font-size: 16px;
+  line-height: 1.3em;
 
   .title {
+    color: $title-color;
     text-align: center;
     font-size: 18px;
+    position: absolute;
+    z-index: 55;
+    left: 0;
+    right: 0;
+    top: 5px;
   }
 
   .month-changer {
@@ -49,22 +57,99 @@
     }
   }
 
+  .time-title {
+    min-height: 1em;
+
+    .close-button {
+      position: absolute;
+      border: none;
+      background-color: transparent;
+      padding: 3px 5px;
+      color: $muted-color;
+      float: right;
+      z-index: 99;
+      cursor: pointer;
+      right: 5px;
+      top: 5px;
+      :hover {
+        color: darken($muted-color, 20%)
+      }
+    }
+  }
   .layer-container {
     padding: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    min-height: 17em;
 
     &.time-picker {
-      padding: 10px 30px 30px;
+      padding: 30px;
       min-width: 200px;
+      box-sizing: border-box;
       position: relative;
+      min-height: 10em;
+
       .separator {
         align-self: center;
         font-size: 22px;
       }
+      .time-value {
+        padding: 5px;
+        border-radius: 5px;
 
+        &:hover {
+          background-color: $day-hover-bg;
+          cursor: pointer;
+        }
+      }
+
+      .time-select-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        background-color: $dropdown-bg;
+        padding: 15px;
+        align-content: center;
+        justify-content: flex-start;
+
+        .time-item {
+          margin-right: 3px;
+          margin-bottom: 3px;
+          width: 25px;
+          height: 25px;
+          border: 1px solid $border-color;
+          padding: 3px;
+          line-height: 1em;
+          text-align: center;
+          border-radius: 5px;
+          box-sizing: border-box;
+
+          &.current {
+            color: $selected-color;
+            background-color: $selected-bg;
+          }
+
+          &.disabled {
+            color: $muted-color;
+            border-color: $muted-color;
+            cursor: initial;
+          }
+
+          &:hover:not(.disabled) {
+            cursor: pointer;
+            background-color: $day-hover-bg;
+            color: $day-hover-color;
+          }
+        }
+      }
     }
+
 
     .calendar-layer {
       padding: 5px;
@@ -78,12 +163,87 @@
       .month-name {
         text-align: center;
         font-size: 18px;
-        text-transform: capitalize;
         padding: 10px;
         color: $month-color;
+        line-height: 1em;
+
+        .month-year {
+          padding: 3px 5px;
+          border-radius: 5px;
+          border: none;
+          background-color: $dropdown-bg;
+          text-transform: capitalize;
+          display: inline-block;
+
+          &:hover {
+            background-color: $day-hover-bg;
+            cursor: pointer;
+          }
+        }
 
         .year {
           color: $year-color;
+        }
+      }
+
+      .layer-selector {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background-color: $dropdown-bg;
+        border-radius: 5px;
+        padding: 10px;
+
+        .column {
+          width: 250px;
+          overflow: hidden;
+          max-height: 100%;
+          padding: 10px;
+          box-sizing: border-box;
+
+          &.year {
+            font-size: 1.1em;
+            line-height: 1.2em;
+          }
+
+          &.month {
+            font-size: 0.9em;
+            line-height: 1em;
+          }
+
+          .layer-selector-item {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 1px;
+            border-radius: 5px;
+            border: none;
+            padding: 2px;
+            text-transform: capitalize;
+            background-color: $dropdown-bg;
+            box-sizing: border-box;
+
+            &.disabled {
+              color: $muted-color;
+              cursor: initial;
+            }
+
+            &:hover:not(.disabled) {
+              background-color: $day-hover-bg;
+              color: $day-hover-color;
+              cursor: pointer;
+            }
+
+            &.current {
+              background-color: $selected-bg;
+              color: $selected-color;
+            }
+          }
         }
       }
 
@@ -91,7 +251,7 @@
         display: table-row;
 
         &.week-names {
-          color: #777;
+          color: $week-color;
           font-size: 1em;
 
           & > .day-container {
@@ -112,6 +272,7 @@
           min-height: 31px;
           padding: 5px 5px;
           text-align: center;
+          box-sizing: border-box;
 
           &.day-6,
           &.day-7 {

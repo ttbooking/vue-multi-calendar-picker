@@ -1,7 +1,20 @@
 <template>
     <div class="calendar-layer">
         <div class="month-name">
-            {{ monthName }} <span class="year">{{ year }}</span>
+            <div class="month-year" @click="setupSelectData">
+                <span class="month" v-text="monthName"/> <span class="year" v-text="year"/>
+            </div>
+        </div>
+        <div class="layer-selector" v-if="showSelector">
+            <div v-for="dataKey in ['month', 'year']" :class="dataKey" class="column" :key="dataKey">
+                <div v-for="item in selectorData[dataKey]"
+                        :key="item.value"
+                        :class="{'current': item.current, 'disabled': item.disabled}"
+                        v-text="item.text"
+                        class="layer-selector-item"
+                        @click="selectLayer(dataKey, item.value, item.disabled)"
+                />
+            </div>
         </div>
         <div class="week week-names">
             <div class="day-container" v-for="day in [1,2,3,4,5,6,7]" :key="day">
@@ -42,7 +55,10 @@ export default {
     name: "calendar-layer",
     props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'disabledDays'],
     data() {
-        return {};
+        return {
+            showSelector: false,
+            selectorData: false,
+        };
     },
     computed: {
         monthName() {
@@ -136,6 +152,62 @@ export default {
         chooseDate(item) {
             this.$emit('input', item);
             this.$emit('select');
+        },
+        selectYear() {
+            this.setupSelectData('year', this.year);
+        },
+        selectMonth() {
+            this.setupSelectData('month', this.month);
+        },
+        setupSelectData() {
+            this.showSelector = true;
+            this.selectorData = {year: [], month: []};
+            for (let i = 0; i < 12; i++) {
+
+                let disabled = false;
+
+                let month = dayjs().year(this.year).month(i).endOf('month');
+                let text = month.format('MMMM');
+
+                if (this.min && this.min > month) {
+                    disabled = true;
+                }
+                if (this.max && this.max < month.startOf('month')) {
+                    disabled = true;
+                }
+
+                this.selectorData.month.push({
+                    value: i,
+                    text: text,
+                    current: i === this.month,
+                    disabled: disabled
+                });
+            }
+            let start = this.year - 4;
+            let end = this.year + 5;
+            for (let i = start; i < end; i++) {
+                let disabled = false;
+                if (this.min && this.min.format('YYYY') > i) {
+                    disabled = true;
+                }
+                if (this.max && this.max.format('YYYY') < i) {
+                    disabled = true;
+                }
+
+                this.selectorData.year.push({
+                    value: i,
+                    text: i,
+                    current: i === this.year,
+                    disabled: disabled,
+                })
+            }
+
+        },
+        selectLayer(key, value, disabled) {
+            if (!disabled) {
+                this.$emit('layer', {key, value})
+                this.showSelector = false;
+            }
         }
 
     }

@@ -16,8 +16,9 @@ $day-font-size: 1.1em !default;
 $day-font-family: monospace !default;
 $day-color: $primary-text-color !default;
 $day-hover-color: $primary-text-color !default;
-$day-hover-bg: lightblue !default;
+$day-hover-bg: #9ed1ff !default;
 
+$title-color: darken($muted-color, 30%);
 
 $weekend-color: lightcoral !default;
 

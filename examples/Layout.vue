@@ -14,7 +14,9 @@
             <h2>Example 1</h2>
             <p>single</p>
             <label>
-                <vue-calendar v-model="model1" :class="theme"/>
+                <vue-calendar v-model="model1"
+                              :class="theme"
+                />
             </label>
         </div>
         <div>
@@ -31,10 +33,10 @@
             <h2>Example 3</h2>
             <p>With timepicker</p>
             <label>
-                <vue-calendar :calendars-count="1"
+                <vue-calendar :calendars-count="2"
                               :class="theme"
                               v-model="model3"
-                              title="SelectDate"
+                              title="Please select a date"
                               time-title="SelectTime"
                               format="DD.MM.YYYY HH:mm:ss"
                 />
@@ -47,7 +49,7 @@
                 <vue-calendar :calendars-count="1"
                               :class="theme"
                               v-model="model4"
-                              title="SelectDate"
+                              title="Please select a date"
                               time-title="SelectTime"
                               format="DD.MM.YYYY HH:mm"
                 />
@@ -119,6 +121,74 @@
                 />
             </label>
         </div>
+        <div>
+            <h2>Example 9</h2>
+            <p>Open next after select</p>
+            <div class="row">
+                <div class="col-2">
+                    <vue-calendar :calendars-count="2"
+                                  :class="theme"
+                                  :disabled-days="disabledDays"
+                                  :marked-range="getMarkedRange()"
+                                  v-model="model9_1"
+                                  title="SelectDate"
+                                  time-title="SelectTime"
+                                  format="DD.MM.YYYY HH:mm"
+                                  @selected="$refs.c9.focus()"
+                    />
+                </div>
+                <div class="col-2">
+                    <vue-calendar :calendars-count="2"
+                                  :class="theme"
+                                  :disabled-days="disabledDays"
+                                  :marked-range="getMarkedRange()"
+                                  v-model="model9_2"
+                                  :min="model9_1"
+                                  title="SelectDate"
+                                  time-title="SelectTime"
+                                  format="DD.MM.YYYY HH:mm"
+                                  ref="c9"
+                                  @selected="$refs.i9.focus()"
+                    />
+                </div>
+                <div class="col-2">
+                    <input type="text" class="form-control" ref="i9" />
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>Example 10</h2>
+            <p>Dynamic marked range with hover event</p>
+            <div class="row">
+                <div class="col-2">
+                    begin
+                    <vue-calendar :calendars-count="2"
+                                  :class="theme"
+                                  :marked-range="getMarkedRange10Begin()"
+                                  v-model="model10_1"
+                                  title="SelectDate"
+                                  time-title="SelectTime"
+                                  format="DD.MM.YYYY"
+                                  @dayHover="day => hover10_1 = day"
+                                  @selected="$refs.c10.focus()"
+                    />
+                </div>
+                <div class="col-2">
+                    end
+                    <vue-calendar :calendars-count="2"
+                                  :class="theme"
+                                  :marked-range="getMarkedRange10End()"
+                                  v-model="model10_2"
+                                  :min="model10_1"
+                                  title="SelectDate"
+                                  time-title="SelectTime"
+                                  format="DD.MM.YYYY"
+                                  ref="c10"
+                                  @dayHover="day => hover10_2 = day"
+                    />
+                </div>
+            </div>
+        </div>
 
     </div>
 </template>
@@ -148,6 +218,12 @@ export default {
             model7: '',
             disabled: false,
             model8: '',
+            model9_1: '',
+            model9_2: '',
+            model10_1: '',
+            model10_2: '',
+            hover10_1: '',
+            hover10_2: '',
         };
     },
     methods: {
@@ -168,6 +244,68 @@ export default {
                 class: 'marked'
             })
 
+            return result;
+        },
+        getMarkedRange10Begin() {
+            let result = [];
+            if (this.model10_2) {
+                result.push({
+                    period: {
+                        start: this.model10_2,
+                        end: this.model10_2,
+                    },
+                    class: 'selected',
+                });
+
+                if (this.hover10_1) {
+                    result.push({
+                        period: {
+                            start: this.hover10_1,
+                            end: this.model10_2,
+                        },
+                        class: 'marked'
+                    })
+                } else if (this.model10_1) {
+                    result.push({
+                        period: {
+                            start: this.model10_1,
+                            end: this.model10_2,
+                        },
+                        class: 'marked'
+                    })
+                }
+            }
+            return result;
+        },
+        getMarkedRange10End() {
+            let result = [];
+
+            if (this.model10_1) {
+                result.push({
+                    period: {
+                        start: this.model10_1,
+                        end: this.model10_1,
+                    },
+                    class: 'selected',
+                });
+                if (this.hover10_2) {
+                    result.push({
+                        period: {
+                            start: this.model10_1,
+                            end: this.hover10_2,
+                        },
+                        class: 'marked'
+                    })
+                } else if (this.model10_2) {
+                    result.push({
+                        period: {
+                            start: this.model10_1,
+                            end: this.model10_2,
+                        },
+                        class: 'marked'
+                    })
+                }
+            }
             return result;
         },
     },

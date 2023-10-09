@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div class="text-center">
+        <div class="text-center time-title">
             <slot name="title"></slot>
-            <button type="button" class="btn text-muted btn-sm pull-right" @click="$emit('close')">
+            <button type="button" class="close-button" @click="$emit('close')">
                 <i class="fa fa-times"></i>
             </button>
         </div>
@@ -10,7 +10,7 @@
 
             <div class="selector hours" v-if="needHours">
                 <simple-count-picker v-model="hours" :min="getMinHours()" :max="getMaxHours()">
-                    <div class="value" v-text="model.format('HH')"></div>
+                    <div class="time-value" v-text="model.format('HH')" @click="showTimePicker('hours')"/>
                 </simple-count-picker>
             </div>
 
@@ -18,7 +18,7 @@
 
             <div class="selector minutes" v-if="needMinutes">
                 <simple-count-picker v-model="minutes" :min="getMinMinutes()" :max="getMaxMinutes()">
-                    <div class="value" v-text="model.format('mm')"></div>
+                    <div class="time-value" v-text="model.format('mm')" @click="showTimePicker('minutes')"/>
                 </simple-count-picker>
             </div>
 
@@ -26,16 +26,26 @@
 
             <div class="selector seconds" v-if="needSeconds">
                 <simple-count-picker v-model="seconds" :min="getMinSeconds()" :max="getMaxSeconds()">
-                    <div class="value" v-text="model.format('ss')"></div>
+                    <div class="time-value" v-text="model.format('ss')" @click="showTimePicker('seconds')"/>
                 </simple-count-picker>
             </div>
+            <div class="time-select-container" v-if="timePicker">
+                <div class="time-item" v-for="item in timePickerData"
+                     :key="item.value"
+                     :class="{'current': item.current, disabled: item.disabled}"
+                     v-text="item.text"
+                     @click="setTimeItem(item)"
+                />
+            </div>
         </div>
+
     </div>
 </template>
 
 <script>
 import SimpleCountPicker from "./SimpleCountPicker.vue";
 import dayjs from '../setup.dayjs.js';
+
 export default {
     name: "TimePicker",
     components: {SimpleCountPicker},
@@ -47,7 +57,9 @@ export default {
             model: this.value && this.value.isValid() ? this.value : dayjs(),
             hours: parseInt(this.value?.format('HH')) || 0,
             minutes: parseInt(this.value?.format('mm')) || 0,
-            seconds: parseInt(this.value?.format('ss')) || 0
+            seconds: parseInt(this.value?.format('ss')) || 0,
+            timePicker: false,
+            timePickerData: [],
         };
     },
     computed: {
@@ -88,6 +100,38 @@ export default {
         },
         emitChange() {
             this.$emit('input', this.model)
+        },
+        showTimePicker(type) {
+            this.timePicker = type;
+            this.timePickerData = [];
+
+            let limit = 60;
+            let inc = 5;
+
+            if (type === 'hours') {
+                limit = 24;
+                inc = 1;
+            }
+
+            for (let i = 0; i < limit; i += inc) {
+
+                let methodType = type.charAt(0).toUpperCase() + type.slice(1);
+                let disabled = (this[`getMin${ methodType }`]() > i) || (this[`getMax${ methodType }`]() < i);
+
+                this.timePickerData.push({
+                    value: i,
+                    text: (i < 10 ? '0' : '') + i,
+                    current: i === this[type],
+                    disabled: disabled,
+                })
+            }
+
+        },
+        setTimeItem(item) {
+            if (!item.disabled) {
+                this[this.timePicker] = item.value;
+                this.timePicker = false;
+            }
         },
     },
     watch: {

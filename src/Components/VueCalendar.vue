@@ -18,13 +18,21 @@
         <div class="calendar-dropdown simple-dropdown" v-if="isShowCalendar" @mousedown.prevent="">
             <div class="date-picker-container" v-if="!isDateSelected">
                 <div class="action-buttons" v-if="isShowActionButtons">
-                    <div class="month-changer prev-month" :class="{'disabled': !checkAllowPrev()}"
-                         @click="prevMonthView">
-                        <slot name="previousSign"><i class="fa fa-chevron-left"></i></slot>
+                    <div class="month-changer prev-month"
+                         :class="{'disabled': !checkAllowPrev()}"
+                         @click="prevMonthView"
+                    >
+                        <slot name="previousSign">
+                            <i class="fa fa-chevron-left"></i>
+                        </slot>
                     </div>
-                    <div class="month-changer next-month" :class="{'disabled': !checkAllowNext()}"
-                         @click="nextMonthView">
-                        <slot name="nextSign"><i class="fa fa-chevron-right"></i></slot>
+                    <div class="month-changer next-month"
+                         :class="{'disabled': !checkAllowNext()}"
+                         @click="nextMonthView"
+                    >
+                        <slot name="nextSign">
+                            <i class="fa fa-chevron-right"></i>
+                        </slot>
                     </div>
                 </div>
                 <slot name="title" v-if="title">
@@ -44,6 +52,7 @@
                             v-model="dateModel"
                             @select="selectHandler"
                             @dayHover="payload => $emit('dayHover', payload)"
+                            @layer="payload => selectLayer(payload, index)"
                         >
                             <template v-slot:day-sub="params">
                                 <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
@@ -127,6 +136,7 @@ export default {
             default: false,
         }
     },
+    emits: ['input', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
     created() {
         this.initCalendar();
     },
@@ -198,11 +208,8 @@ export default {
 
             if (this.min && this.min.length && date < this.limitMin) {
                 this.inputValue = this.min;
-                this.$emit('input', this.inputValue);
-                this.dateModel = this.getDateModelFromValue();
-                date = this.dateModel;
+                date = this.limitMin;
             }
-
 
             this.initCalendarLayers(date);
         },
@@ -210,8 +217,10 @@ export default {
             return dayjs(this.inputValue, this.format);
         },
         focus() {
-            this.$refs.input.focus();
-            this.$emit('focus', this.activeLayers);
+            setTimeout(() => {
+                this.$refs.input.focus();
+                this.$emit('focus', this.activeLayers);
+            })
         },
         blur() {
             //временный костыль, т.к. в месте использования не работает
@@ -225,9 +234,18 @@ export default {
         },
         close() {
             if (this.isShowCalendar) {
+                // Если дату установили, при этом время не установлено, тогда бросим событие
+                // Иначе если дату не установили, то и события быть не должно
+                let selected = this.isDateSelected && !this.isTimeSelected && this.isWithTime;
+
                 this.isDateSelected = true;
                 this.isTimeSelected = true;
                 this.$emit('close', this.activeLayers);
+
+                if (selected) {
+                    this.$emit('selected', this.activeLayers);
+                }
+
             }
         },
         toggle() {
@@ -267,7 +285,6 @@ export default {
         },
         selectHandler(isTime = false) {
             if (isTime) {
-                this.isTimeSelected = true;
                 this.blur();
             } else {
                 this.isDateSelected = true;
@@ -282,6 +299,11 @@ export default {
         setActiveLayers(layers) {
             this.$nextTick(() => this.activeLayers = layers);
         },
+        selectLayer(payload, index) {
+            let date = this.activeLayers[index].moment.set(payload.key, payload.value).subtract(index, "month");
+            this.initCalendarLayers(date);
+            this.$emit('layerChange', this.activeLayers)
+        }
     },
     watch: {
         min() {
@@ -314,11 +336,10 @@ export default {
                 if (formattedDate !== this.inputValue) {
                     this.inputValue = formattedDate;
                 }
-            } else if (this.inputValue !== '') {
+            } else if (this.inputValue) {
                 this.inputValue = '';
             }
 
-            this.$emit('selected', this.activeLayers);
         }
     },
     directives: {
