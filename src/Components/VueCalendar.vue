@@ -289,6 +289,7 @@ export default {
             } else {
                 this.isDateSelected = true;
                 if (!this.isWithTime) {
+                    this.$emit('selected', this.activeLayers);
                     this.blur();
                 }
             }
