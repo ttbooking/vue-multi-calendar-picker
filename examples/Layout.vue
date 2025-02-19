@@ -180,6 +180,7 @@
                                   :marked-range="getMarkedRange10End()"
                                   v-model="model10_2"
                                   :min="model10_1"
+                                  :max="max10_2()"
                                   title="SelectDate"
                                   time-title="SelectTime"
                                   format="DD.MM.YYYY"
@@ -308,6 +309,13 @@ export default {
             }
             return result;
         },
+        max10_2() {
+            if (this.$refs.c10) {
+                console.log(this.$refs.c10.format);
+                return dayjs(this.model10_1, this.$refs.c10.format).add(100, "days").format(this.$refs.c10.format);
+            }
+            return null;
+        }
     },
 }
 </script>

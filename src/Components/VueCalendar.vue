@@ -210,6 +210,12 @@ export default {
                 this.inputValue = this.min;
                 date = this.limitMin;
             }
+            if (this.max && this.max.length && date > this.limitMax) {
+                if (this.limitMax > this.limitMin) {
+                    this.inputValue = this.max;
+                    date = this.limitMax;
+                }
+            }
 
             this.initCalendarLayers(date);
         },
