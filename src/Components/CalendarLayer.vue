@@ -24,21 +24,20 @@
         <div class="week" v-for="(week, index) in getCalendarLayer()" :key="index">
             <div class="day-container" v-for="(day, index) in week" :key="index">
                 <template v-if="day && day.enabled">
-                    <div class="day"
-                         :class="day.class"
-                         v-if="day"
-                         @mouseover="() => $emit('dayHover', day.value)"
+                    <div @mouseover="() => $emit('dayHover', day.value)"
                          @mouseleave="() => $emit('dayHover')"
                          @click="chooseDate(day.value)"
                     >
-                        <slot name="day" :day="day">{{ day.label }}</slot>
-                        <slot name="day-sub" :date="day.value" :is-enabled="day.enabled"></slot>
+                        <slot name="day" :day="day">
+                            <div class="day" :class="day.class">{{ day.label }}</div>
+                        </slot>
                     </div>
                 </template>
                 <template v-else>
-                    <div class="day" :class="day.class" v-if="day">
-                        <slot name="day" :day="day">{{ day.label }}</slot>
-                        <slot name="day-sub" :date="day.value" :is-enabled="day.enabled"></slot>
+                    <div v-if="day">
+                        <slot name="day" :day="day">
+                            <div class="day" :class="day.class">{{ day.label }}</div>
+                        </slot>
                     </div>
                 </template>
             </div>
