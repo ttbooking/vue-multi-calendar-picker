@@ -198,6 +198,7 @@
         background-color: $dropdown-bg;
         border-radius: 5px;
         padding: 10px;
+        z-index: 3;
 
         .column {
           width: 250px;
