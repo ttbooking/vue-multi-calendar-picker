@@ -39,26 +39,27 @@
                     <div class="title">{{ title }}</div>
                 </slot>
                 <div class="layer-container">
-                    <template v-for="(layer, index) in activeLayers">
-                        <calendar-layer
-                            :min="limitMin"
-                            :current="dateModel"
-                            :max="limitMax"
-                            :month="layer.month"
-                            :year="layer.year"
-                            :marked-range="markedDateRange"
-                            :disabled-days="disabledDays"
-                            :key="index"
-                            v-model="dateModel"
-                            @select="selectHandler"
-                            @dayHover="payload => $emit('dayHover', payload)"
-                            @layer="payload => selectLayer(payload, index)"
-                        >
-                            <template v-slot:day-sub="params">
-                                <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
-                            </template>
-                        </calendar-layer>
-                    </template>
+                    <calendar-layer v-for="(layer, index) in activeLayers"
+                        :key="index"
+                        :min="limitMin"
+                        :current="dateModel"
+                        :max="limitMax"
+                        :month="layer.month"
+                        :year="layer.year"
+                        :marked-range="markedDateRange"
+                        :disabled-days="disabledDays"
+                        v-model="dateModel"
+                        @select="selectHandler"
+                        @dayHover="payload => $emit('dayHover', payload)"
+                        @layer="payload => selectLayer(payload, index)"
+                    >
+                        <template v-slot:day="params">
+                            <slot name="day" :day="params.day" />
+                        </template>
+                        <template #day-sub="params">
+                            <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
+                        </template>
+                    </calendar-layer>
                 </div>
             </div>
             <div class="time-picker-container" v-else-if="!isTimeSelected">
@@ -68,7 +69,7 @@
                              :max="limitMax"
                              @close="selectHandler(true)"
                 >
-                    <template v-slot:title>
+                    <template #title>
                         <slot name="time-title" v-if="timeTitle">
                             <span class="title" v-text="timeTitle"></span>
                         </slot>
