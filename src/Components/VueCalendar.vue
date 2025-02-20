@@ -56,9 +56,6 @@
                         <template v-slot:day="params">
                             <slot name="day" :day="params.day" />
                         </template>
-                        <template #day-sub="params">
-                            <slot name="day-sub" :date="params.date" :is-enabled="params.isEnabled"></slot>
-                        </template>
                     </calendar-layer>
                 </div>
             </div>
