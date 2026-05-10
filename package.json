@@ -28,9 +28,14 @@
     "webpack": "5.75.0"
   },
   "description": "CalendarPicker based on dayjs",
-  "main": "dist/vue-multi-calendar-picker.common.js",
+  "main": "index.js",
   "unpkg": "dist/vue-multi-calendar-picker.umd.min.js",
   "style": "dist/vue-multi-calendar-picker.css",
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "src/sass/**/*.scss"
+  ],
   "files": [
     "dist",
     "src",

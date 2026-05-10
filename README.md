@@ -28,7 +28,6 @@ Vue is a peer dependency and must be provided by the host application.
 
 <script>
 import VueCalendar from 'vue-multi-calendar-picker';
-import 'vue-multi-calendar-picker/dist/vue-multi-calendar-picker.css';
 
 export default {
   components: { VueCalendar },
@@ -108,6 +107,8 @@ yarn build
 ```
 
 The library build is generated in `dist`.
+
+The default package entry imports `src/sass/style.scss`, so bundler-based applications receive the component styles automatically. For direct UMD usage, include `dist/vue-multi-calendar-picker.css` next to the UMD script.
 
 ## Vue 3 migration notes
 
