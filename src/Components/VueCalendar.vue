@@ -48,6 +48,7 @@
                         :year="layer.year"
                         :marked-range="markedDateRange"
                         :disabled-days="disabledDays"
+                        :locale="normalizedLocale"
                         v-model="dateModel"
                         @select="selectHandler"
                         @dayHover="payload => $emit('dayHover', payload)"
@@ -132,6 +133,15 @@ export default {
         disabled: {
             type: Boolean,
             default: false,
+        },
+        locale: {
+            type: [String, Object],
+            default: () => {
+                const locale = typeof window !== 'undefined'
+                    ? window.locale?.toLowerCase()
+                    : null;
+                return locale?.split('-')[0] || 'ru';
+            },
         }
     },
     emits: ['input', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
@@ -154,14 +164,17 @@ export default {
         isShowCalendar() {
             return !(this.isTimeSelected && this.isDateSelected);
         },
+        normalizedLocale() {
+            return this.getNormalizedLocale();
+        },
         markedDateRange() {
             let range = [];
             if (this.markedRange && this.markedRange.length) {
                 for (let i in this.markedRange) {
 
                     range.push({
-                        start: dayjs(this.markedRange[i].period.start, this.format).startOf('day'),
-                        end: dayjs(this.markedRange[i].period.end, this.format).endOf('day'),
+                        start: this.parseDate(this.markedRange[i].period.start).startOf('day'),
+                        end: this.parseDate(this.markedRange[i].period.end).endOf('day'),
                         class: this.markedRange[i].class,
                     })
 
@@ -170,10 +183,10 @@ export default {
             return range;
         },
         limitMin() {
-            return dayjs(this.min, this.format);
+            return this.parseDate(this.min);
         },
         limitMax() {
-            return dayjs(this.max, this.format);
+            return this.parseDate(this.max);
         },
         isShowActionButtons() {
             return this.checkAllowPrev() || this.checkAllowNext();
@@ -185,6 +198,27 @@ export default {
         },
         isAfter(date, limit) {
             return date.isValid() && limit.isValid() && date.valueOf() > limit.valueOf();
+        },
+        normalizeLocale(locale) {
+            return String(locale || 'ru').toLowerCase().split(/[-_]/)[0] || 'ru';
+        },
+        getNormalizedLocale() {
+            if (typeof this.locale === 'string') {
+                return this.normalizeLocale(this.locale);
+            }
+            if (this.locale && typeof this.locale === 'object') {
+                return this.normalizeLocale(
+                    this.locale.locale || this.locale.lang || this.locale.code || this.locale.name
+                );
+            }
+            return 'ru';
+        },
+        parseDate(value) {
+            const locale = this.getNormalizedLocale();
+            return dayjs(value, this.format, locale).locale(locale);
+        },
+        getLocalizedDate() {
+            return dayjs().locale(this.getNormalizedLocale());
         },
         initCalendarLayers(date) {
             if (date && date.isValid()) {
@@ -208,7 +242,7 @@ export default {
             }
         },
         initCalendar() {
-            let date = this.dateModel?.isValid() ? this.dateModel : dayjs();
+            let date = this.dateModel?.isValid() ? this.dateModel : this.getLocalizedDate();
 
             if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
                 this.inputValue = this.min;
@@ -224,7 +258,7 @@ export default {
             this.initCalendarLayers(date);
         },
         getDateModelFromValue() {
-            return dayjs(this.inputValue, this.format);
+            return this.parseDate(this.inputValue);
         },
         focus() {
             setTimeout(() => {
@@ -327,6 +361,10 @@ export default {
             this.initCalendar();
         },
         max() {
+            this.initCalendar();
+        },
+        locale() {
+            this.dateModel = this.getDateModelFromValue();
             this.initCalendar();
         },
         value: {

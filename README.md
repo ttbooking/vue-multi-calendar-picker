@@ -16,6 +16,7 @@ Vue is a peer dependency and must be provided by the host application.
 <template>
   <vue-calendar
     v-model="date"
+    locale="ru"
     format="DD.MM.YYYY HH:mm"
     :calendars-count="2"
     :min="min"
@@ -76,6 +77,19 @@ export default {
 | `timeTitle` | `String` | `null` | Time picker title. |
 | `disabledDays` | `Function` | `null` | Receives a dayjs date, return `true` to disable the day. |
 | `disabled` | `Boolean` | `false` | Disables the input. |
+| `locale` | `String\|Object` | `window.locale` or `ru` | Locale for month and weekday names, and localized parsing. Built-in locales: `ru`, `en`. Region tags such as `en-US` are normalized to `en`. |
+
+## Localization
+
+The package includes `ru` and `en` dayjs locales. By default it uses `window.locale` when available, normalized to the language part, or `ru` otherwise.
+
+```js
+window.locale = 'en-US';
+```
+
+```vue
+<vue-calendar v-model="date" locale="en" />
+```
 
 ## Events
 

@@ -50,7 +50,7 @@ import dayjs from '../setup.dayjs.js';
 
 export default {
     name: "calendar-layer",
-    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'disabledDays'],
+    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'disabledDays', 'locale'],
     data() {
         return {
             showSelector: false,
@@ -59,7 +59,7 @@ export default {
     },
     computed: {
         monthName() {
-            return dayjs().month(this.month).format('MMMM')
+            return this.getLocalizedDate().month(this.month).format('MMMM')
         },
         calendarLayer() {
             return this.getCalendarLayer();
@@ -72,13 +72,16 @@ export default {
         isAfter(date, limit) {
             return date.isValid() && limit.isValid() && date.valueOf() > limit.valueOf();
         },
+        getLocalizedDate(date = dayjs()) {
+            return date.locale(this.locale || 'ru');
+        },
         getCalendarLayer() {
 
             let currentHour = this.current.hour() || 0;
             let currentMinute = this.current.minute() || 0;
             let currentSeconds = this.current.second() || 0;
 
-            let momentDate = dayjs()
+            let momentDate = this.getLocalizedDate()
                 .year(this.year)
                 .month(this.month)
                 .date(1)
@@ -90,7 +93,7 @@ export default {
 
             let justCompareFormat = 'DD~MM~YYYY';
 
-            let nowTime = dayjs().format(justCompareFormat);
+            let nowTime = this.getLocalizedDate().format(justCompareFormat);
 
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
@@ -157,7 +160,7 @@ export default {
             return weeks;
         },
         getWeekDayName(day) {
-            return dayjs().isoWeekday(day).format('dd');
+            return this.getLocalizedDate().isoWeekday(day).format('dd');
         },
         chooseDate(item) {
             this.$emit('input', item);
@@ -176,7 +179,7 @@ export default {
 
                 let disabled = false;
 
-                let month = dayjs().year(this.year).month(i).endOf('month');
+                let month = this.getLocalizedDate().year(this.year).month(i).endOf('month');
                 let text = month.format('MMMM');
 
                 if (this.min?.isValid() && this.isAfter(this.min, month)) {
