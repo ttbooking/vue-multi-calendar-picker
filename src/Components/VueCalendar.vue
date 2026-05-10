@@ -180,6 +180,12 @@ export default {
         }
     },
     methods: {
+        isBefore(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() < limit.valueOf();
+        },
+        isAfter(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() > limit.valueOf();
+        },
         initCalendarLayers(date) {
             if (date && date.isValid()) {
                 let dateClone = date.endOf('month');
@@ -204,12 +210,12 @@ export default {
         initCalendar() {
             let date = this.dateModel?.isValid() ? this.dateModel : dayjs();
 
-            if (this.min && this.min.length && date < this.limitMin) {
+            if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
                 this.inputValue = this.min;
                 date = this.limitMin;
             }
-            if (this.max && this.max.length && date > this.limitMax) {
-                if (this.limitMax > this.limitMin) {
+            if (this.max && this.max.length && this.isAfter(date, this.limitMax)) {
+                if (!this.limitMin.isValid() || this.isAfter(this.limitMax, this.limitMin)) {
                     this.inputValue = this.max;
                     date = this.limitMax;
                 }
@@ -227,7 +233,7 @@ export default {
             })
         },
         blur() {
-            //временный костыль, т.к. в месте использования не работает
+            // Keep focus transitions async so click handlers inside the picker can finish first.
             setTimeout(() => {
                 this.$refs.input.blur();
             });
@@ -256,18 +262,24 @@ export default {
             this.isShowCalendar ? this.close() : this.open();
         },
         checkAllowPrev() {
+            if (!this.activeLayers.length) {
+                return false;
+            }
             if (this.limitMin.isValid()) {
                 let firstMonth = this.activeLayers[0].moment;
                 firstMonth = firstMonth.subtract(1, 'month').endOf('month');
-                return firstMonth >= this.limitMin;
+                return !this.isBefore(firstMonth, this.limitMin);
             }
             return true;
         },
         checkAllowNext() {
+            if (!this.activeLayers.length) {
+                return false;
+            }
             if (this.limitMax.isValid()) {
                 let lastMonth = this.activeLayers[this.activeLayers.length - 1].moment;
                 lastMonth = lastMonth.add(1, 'month').startOf('month');
-                return this.limitMax >= lastMonth;
+                return !this.isBefore(this.limitMax, lastMonth);
             }
             return true;
         },
@@ -330,10 +342,10 @@ export default {
         dateModel() {
             if (this.dateModel.isValid()) {
 
-                if (this.limitMin && this.limitMin.isValid() && this.dateModel < this.limitMin) {
+                if (this.limitMin && this.limitMin.isValid() && this.isBefore(this.dateModel, this.limitMin)) {
                     this.dateModel = this.limitMin;
                 }
-                if (this.limitMax && this.limitMax.isValid() && this.dateModel > this.limitMax) {
+                if (this.limitMax && this.limitMax.isValid() && this.isAfter(this.dateModel, this.limitMax)) {
                     this.dateModel = this.limitMax;
                 }
 

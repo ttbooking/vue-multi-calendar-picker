@@ -311,7 +311,6 @@ export default {
         },
         max10_2() {
             if (this.$refs.c10) {
-                console.log(this.$refs.c10.format);
                 return dayjs(this.model10_1, this.$refs.c10.format).add(100, "days").format(this.$refs.c10.format);
             }
             return null;

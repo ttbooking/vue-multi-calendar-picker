@@ -53,11 +53,12 @@ export default {
         'value', 'format', 'min', 'max'
     ],
     data() {
+        const initialModel = this.value && this.value.isValid() ? this.value : dayjs();
         return {
-            model: this.value && this.value.isValid() ? this.value : dayjs(),
-            hours: parseInt(this.value?.format('HH')) || 0,
-            minutes: parseInt(this.value?.format('mm')) || 0,
-            seconds: parseInt(this.value?.format('ss')) || 0,
+            model: initialModel,
+            hours: parseInt(initialModel.format('HH')) || 0,
+            minutes: parseInt(initialModel.format('mm')) || 0,
+            seconds: parseInt(initialModel.format('ss')) || 0,
             timePicker: false,
             timePickerData: [],
         };
@@ -75,10 +76,10 @@ export default {
     },
     methods: {
         currentDateIsMin(compareFormat) {
-            return this.min && this.model.format(compareFormat) === this.min.format(compareFormat);
+            return this.min?.isValid() && this.model.format(compareFormat) === this.min.format(compareFormat);
         },
         currentDateIsMax(compareFormat) {
-            return this.max && this.model.format(compareFormat) === this.max.format(compareFormat);
+            return this.max?.isValid() && this.model.format(compareFormat) === this.max.format(compareFormat);
         },
         getMinHours() {
             return this.currentDateIsMin('DD.MM.YYYY') ? parseInt(this.min.format('HH')) : 0;
@@ -147,10 +148,11 @@ export default {
             this.model = this.model.second(this.seconds);
             this.emitChange();
         },
-        value() {
-            this.hours = parseInt(this.model?.format('HH')) || 0;
-            this.minutes = parseInt(this.model?.format('mm')) || 0;
-            this.seconds = parseInt(this.model?.format('ss')) || 0;
+        value(newValue) {
+            this.model = newValue && newValue.isValid() ? newValue : dayjs();
+            this.hours = parseInt(this.model.format('HH')) || 0;
+            this.minutes = parseInt(this.model.format('mm')) || 0;
+            this.seconds = parseInt(this.model.format('ss')) || 0;
         }
     }
 }

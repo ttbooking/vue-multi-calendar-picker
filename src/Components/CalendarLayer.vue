@@ -21,7 +21,7 @@
                 <span>{{ getWeekDayName(day) }}</span>
             </div>
         </div>
-        <div class="week" v-for="(week, index) in getCalendarLayer()" :key="index">
+        <div class="week" v-for="(week, index) in calendarLayer" :key="index">
             <div class="day-container" v-for="(day, index) in week" :key="index">
                 <template v-if="day && day.enabled">
                     <div @mouseover="() => $emit('dayHover', day.value)"
@@ -60,9 +60,18 @@ export default {
     computed: {
         monthName() {
             return dayjs().month(this.month).format('MMMM')
+        },
+        calendarLayer() {
+            return this.getCalendarLayer();
         }
     },
     methods: {
+        isBefore(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() < limit.valueOf();
+        },
+        isAfter(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() > limit.valueOf();
+        },
         getCalendarLayer() {
 
             let currentHour = this.current.hour() || 0;
@@ -86,15 +95,19 @@ export default {
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
 
-            let minDate = this.min
+            let minDate = this.min?.isValid()
+                ? this.min
                 .hour(currentHour)
                 .minute(currentMinute)
-                .second(currentSeconds);
+                    .second(currentSeconds)
+                : null;
 
-            let maxDate = this.max
+            let maxDate = this.max?.isValid()
+                ? this.max
                 .hour(currentHour)
                 .minute(currentMinute)
-                .second(currentSeconds);
+                    .second(currentSeconds)
+                : null;
 
             let lastWeek = +momentDate.isoWeek();
             let currentWeek = Object.assign({}, week);
@@ -117,7 +130,7 @@ export default {
                 if (this.disabledDays && this.disabledDays(momentDate)) {
                     dayClasses.push('locked');
                     disabled = true;
-                } else if ((minDate?.diff(momentDate, 'days') > 0) || (maxDate?.diff(momentDate, 'days') < 0)) {
+                } else if ((minDate && minDate.diff(momentDate, 'days') > 0) || (maxDate && maxDate.diff(momentDate, 'days') < 0)) {
                     dayClasses.push('locked');
                     disabled = true;
                 }
@@ -166,10 +179,10 @@ export default {
                 let month = dayjs().year(this.year).month(i).endOf('month');
                 let text = month.format('MMMM');
 
-                if (this.min && this.min > month) {
+                if (this.min?.isValid() && this.isAfter(this.min, month)) {
                     disabled = true;
                 }
-                if (this.max && this.max < month.startOf('month')) {
+                if (this.max?.isValid() && this.isBefore(this.max, month.startOf('month'))) {
                     disabled = true;
                 }
 
@@ -184,10 +197,10 @@ export default {
             let end = this.year + 5;
             for (let i = start; i < end; i++) {
                 let disabled = false;
-                if (this.min && this.min.format('YYYY') > i) {
+                if (this.min?.isValid() && parseInt(this.min.format('YYYY')) > i) {
                     disabled = true;
                 }
-                if (this.max && this.max.format('YYYY') < i) {
+                if (this.max?.isValid() && parseInt(this.max.format('YYYY')) < i) {
                     disabled = true;
                 }
 

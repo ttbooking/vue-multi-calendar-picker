@@ -51,7 +51,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.12.16":
+"@babel/core@npm:7.20.5, @babel/core@npm:^7.12.16":
   version: 7.20.5
   resolution: "@babel/core@npm:7.20.5"
   dependencies:
@@ -8854,6 +8854,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vue-multi-calendar-picker@workspace:."
   dependencies:
+    "@babel/core": 7.20.5
     "@babel/eslint-parser": ^7.19.1
     "@popperjs/core": ^2.11.6
     "@ttbooking/vue-click-outside-directive": ^1.0.3
@@ -8870,6 +8871,9 @@ __metadata:
     sass: ^1.56.1
     sass-loader: 13.2.0
     style-loader: ^3.3.1
+    vue: ^2.7.14
+    webpack: 5.75.0
+  peerDependencies:
     vue: ^2.7.14
   languageName: unknown
   linkType: soft
@@ -9048,7 +9052,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.54.0":
+"webpack@npm:5.75.0, webpack@npm:^5.54.0":
   version: 5.75.0
   resolution: "webpack@npm:5.75.0"
   dependencies:
