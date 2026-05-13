@@ -25,6 +25,9 @@ export default {
         value: {
             type: Number,
         },
+        modelValue: {
+            type: Number,
+        },
         min: {
             type: Number,
         },
@@ -33,12 +36,17 @@ export default {
         },
 
     },
+    emits: ['input', 'update:modelValue'],
     data() {
+        const initialValue = this.modelValue !== undefined ? this.modelValue : this.value;
         return {
-            model: this.value || 0
+            model: initialValue || 0
         };
     },
     computed: {
+        currentValue() {
+            return this.modelValue !== undefined ? this.modelValue : this.value;
+        },
         canMegaIncrease() {
             return this.model + 10 <= this.max;
         },
@@ -87,11 +95,15 @@ export default {
     },
     watch: {
         value() {
-            this.model = this.value;
+            this.model = this.currentValue;
+        },
+        modelValue() {
+            this.model = this.currentValue;
         },
         model() {
             this.controlModel();
             this.$emit('input', this.model);
+            this.$emit('update:modelValue', this.model);
         },
         max() {
             this.controlModel();

@@ -9,7 +9,14 @@
         <div class="time-picker layer-container">
 
             <div class="selector hours" v-if="needHours">
-                <simple-count-picker v-model="hours" :min="getMinHours()" :max="getMaxHours()">
+                <simple-count-picker
+                    :value="hours"
+                    :model-value="hours"
+                    :min="getMinHours()"
+                    :max="getMaxHours()"
+                    @input="hours = $event"
+                    @update:modelValue="hours = $event"
+                >
                     <div class="time-value" v-text="model.format('HH')" @click="showTimePicker('hours')"/>
                 </simple-count-picker>
             </div>
@@ -17,7 +24,14 @@
             <div class="separator" v-if="needHours && needMinutes">:</div>
 
             <div class="selector minutes" v-if="needMinutes">
-                <simple-count-picker v-model="minutes" :min="getMinMinutes()" :max="getMaxMinutes()">
+                <simple-count-picker
+                    :value="minutes"
+                    :model-value="minutes"
+                    :min="getMinMinutes()"
+                    :max="getMaxMinutes()"
+                    @input="minutes = $event"
+                    @update:modelValue="minutes = $event"
+                >
                     <div class="time-value" v-text="model.format('mm')" @click="showTimePicker('minutes')"/>
                 </simple-count-picker>
             </div>
@@ -25,7 +39,14 @@
             <div class="separator" v-if="(needMinutes||needHours) && needSeconds">:</div>
 
             <div class="selector seconds" v-if="needSeconds">
-                <simple-count-picker v-model="seconds" :min="getMinSeconds()" :max="getMaxSeconds()">
+                <simple-count-picker
+                    :value="seconds"
+                    :model-value="seconds"
+                    :min="getMinSeconds()"
+                    :max="getMaxSeconds()"
+                    @input="seconds = $event"
+                    @update:modelValue="seconds = $event"
+                >
                     <div class="time-value" v-text="model.format('ss')" @click="showTimePicker('seconds')"/>
                 </simple-count-picker>
             </div>
@@ -50,19 +71,25 @@ export default {
     name: "TimePicker",
     components: {SimpleCountPicker},
     props: [
-        'value', 'format', 'min', 'max'
+        'value', 'modelValue', 'format', 'min', 'max'
     ],
+    emits: ['input', 'update:modelValue', 'close'],
     data() {
+        const initialValue = this.modelValue !== undefined ? this.modelValue : this.value;
+        const initialModel = initialValue && initialValue.isValid() ? initialValue : dayjs();
         return {
-            model: this.value && this.value.isValid() ? this.value : dayjs(),
-            hours: parseInt(this.value?.format('HH')) || 0,
-            minutes: parseInt(this.value?.format('mm')) || 0,
-            seconds: parseInt(this.value?.format('ss')) || 0,
+            model: initialModel,
+            hours: parseInt(initialModel.format('HH')) || 0,
+            minutes: parseInt(initialModel.format('mm')) || 0,
+            seconds: parseInt(initialModel.format('ss')) || 0,
             timePicker: false,
             timePickerData: [],
         };
     },
     computed: {
+        currentValue() {
+            return this.modelValue !== undefined ? this.modelValue : this.value;
+        },
         needHours() {
             return this.format.match(/[Hhk]/);
         },
@@ -74,11 +101,18 @@ export default {
         },
     },
     methods: {
+        syncValue() {
+            const newValue = this.currentValue;
+            this.model = newValue && newValue.isValid() ? newValue : dayjs();
+            this.hours = parseInt(this.model.format('HH')) || 0;
+            this.minutes = parseInt(this.model.format('mm')) || 0;
+            this.seconds = parseInt(this.model.format('ss')) || 0;
+        },
         currentDateIsMin(compareFormat) {
-            return this.min && this.model.format(compareFormat) === this.min.format(compareFormat);
+            return this.min?.isValid() && this.model.format(compareFormat) === this.min.format(compareFormat);
         },
         currentDateIsMax(compareFormat) {
-            return this.max && this.model.format(compareFormat) === this.max.format(compareFormat);
+            return this.max?.isValid() && this.model.format(compareFormat) === this.max.format(compareFormat);
         },
         getMinHours() {
             return this.currentDateIsMin('DD.MM.YYYY') ? parseInt(this.min.format('HH')) : 0;
@@ -99,7 +133,8 @@ export default {
             return this.currentDateIsMax('DD.MM.YYYY HH:mm') ? parseInt(this.max.format('ss')) : 59;
         },
         emitChange() {
-            this.$emit('input', this.model)
+            this.$emit('input', this.model);
+            this.$emit('update:modelValue', this.model);
         },
         showTimePicker(type) {
             this.timePicker = type;
@@ -148,9 +183,10 @@ export default {
             this.emitChange();
         },
         value() {
-            this.hours = parseInt(this.model?.format('HH')) || 0;
-            this.minutes = parseInt(this.model?.format('mm')) || 0;
-            this.seconds = parseInt(this.model?.format('ss')) || 0;
+            this.syncValue();
+        },
+        modelValue() {
+            this.syncValue();
         }
     }
 }

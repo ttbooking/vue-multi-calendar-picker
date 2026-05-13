@@ -48,7 +48,11 @@
                         :year="layer.year"
                         :marked-range="markedDateRange"
                         :disabled-days="disabledDays"
-                        v-model="dateModel"
+                        :locale="normalizedLocale"
+                        :value="dateModel"
+                        :model-value="dateModel"
+                        @input="dateModel = $event"
+                        @update:modelValue="dateModel = $event"
                         @select="selectHandler"
                         @dayHover="payload => $emit('dayHover', payload)"
                         @layer="payload => selectLayer(payload, index)"
@@ -60,10 +64,14 @@
                 </div>
             </div>
             <div class="time-picker-container" v-else-if="!isTimeSelected">
-                <time-picker v-model="dateModel"
+                <time-picker
+                             :value="dateModel"
+                             :model-value="dateModel"
                              :format="format"
                              :min="limitMin"
                              :max="limitMax"
+                             @input="dateModel = $event"
+                             @update:modelValue="dateModel = $event"
                              @close="selectHandler(true)"
                 >
                     <template #title>
@@ -88,6 +96,7 @@ export default {
     name: "vue-calendar",
     props: {
         value: String,
+        modelValue: String,
         placeholder: String,
         format: {
             type: String,
@@ -132,27 +141,43 @@ export default {
         disabled: {
             type: Boolean,
             default: false,
+        },
+        locale: {
+            type: [String, Object],
+            default: () => {
+                const locale = typeof window !== 'undefined'
+                    ? window.locale?.toLowerCase()
+                    : null;
+                return locale?.split('-')[0] || 'ru';
+            },
         }
     },
-    emits: ['input', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
+    emits: ['input', 'update:modelValue', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
     created() {
         this.initCalendar();
     },
     data() {
+        const initialValue = this.modelValue !== undefined ? this.modelValue : this.value;
         return {
-            inputValue: this.value,
-            dateModel: this.getDateModelFromValue(),
+            inputValue: initialValue,
+            dateModel: this.getDateModelFromValue(initialValue),
             activeLayers: [],
             isDateSelected: true,
             isTimeSelected: true,
         };
     },
     computed: {
+        currentValue() {
+            return this.modelValue !== undefined ? this.modelValue : this.value;
+        },
         isWithTime() {
             return this.format.match(/[Hhkms]/)
         },
         isShowCalendar() {
             return !(this.isTimeSelected && this.isDateSelected);
+        },
+        normalizedLocale() {
+            return this.getNormalizedLocale();
         },
         markedDateRange() {
             let range = [];
@@ -160,8 +185,8 @@ export default {
                 for (let i in this.markedRange) {
 
                     range.push({
-                        start: dayjs(this.markedRange[i].period.start, this.format).startOf('day'),
-                        end: dayjs(this.markedRange[i].period.end, this.format).endOf('day'),
+                        start: this.parseDate(this.markedRange[i].period.start).startOf('day'),
+                        end: this.parseDate(this.markedRange[i].period.end).endOf('day'),
                         class: this.markedRange[i].class,
                     })
 
@@ -170,16 +195,49 @@ export default {
             return range;
         },
         limitMin() {
-            return dayjs(this.min, this.format);
+            return this.parseDate(this.min);
         },
         limitMax() {
-            return dayjs(this.max, this.format);
+            return this.parseDate(this.max);
         },
         isShowActionButtons() {
             return this.checkAllowPrev() || this.checkAllowNext();
         }
     },
     methods: {
+        syncInputValue(value) {
+            if (this.inputValue !== value) {
+                this.inputValue = value;
+                this.dateModel = this.getDateModelFromValue();
+            }
+        },
+        isBefore(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() < limit.valueOf();
+        },
+        isAfter(date, limit) {
+            return date.isValid() && limit.isValid() && date.valueOf() > limit.valueOf();
+        },
+        normalizeLocale(locale) {
+            return String(locale || 'ru').toLowerCase().split(/[-_]/)[0] || 'ru';
+        },
+        getNormalizedLocale() {
+            if (typeof this.locale === 'string') {
+                return this.normalizeLocale(this.locale);
+            }
+            if (this.locale && typeof this.locale === 'object') {
+                return this.normalizeLocale(
+                    this.locale.locale || this.locale.lang || this.locale.code || this.locale.name
+                );
+            }
+            return 'ru';
+        },
+        parseDate(value) {
+            const locale = this.getNormalizedLocale();
+            return dayjs(value, this.format, locale).locale(locale);
+        },
+        getLocalizedDate() {
+            return dayjs().locale(this.getNormalizedLocale());
+        },
         initCalendarLayers(date) {
             if (date && date.isValid()) {
                 let dateClone = date.endOf('month');
@@ -202,23 +260,25 @@ export default {
             }
         },
         initCalendar() {
-            let date = this.dateModel?.isValid() ? this.dateModel : dayjs();
+            let date = this.dateModel?.isValid() ? this.dateModel : this.getLocalizedDate();
 
-            if (this.min && this.min.length && date < this.limitMin) {
+            if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
                 this.inputValue = this.min;
+                this.dateModel = this.limitMin;
                 date = this.limitMin;
             }
-            if (this.max && this.max.length && date > this.limitMax) {
-                if (this.limitMax > this.limitMin) {
+            if (this.max && this.max.length && this.isAfter(date, this.limitMax)) {
+                if (!this.limitMin.isValid() || this.isAfter(this.limitMax, this.limitMin)) {
                     this.inputValue = this.max;
+                    this.dateModel = this.limitMax;
                     date = this.limitMax;
                 }
             }
 
             this.initCalendarLayers(date);
         },
-        getDateModelFromValue() {
-            return dayjs(this.inputValue, this.format);
+        getDateModelFromValue(value = this.currentValue) {
+            return this.parseDate(value);
         },
         focus() {
             setTimeout(() => {
@@ -227,7 +287,7 @@ export default {
             })
         },
         blur() {
-            //временный костыль, т.к. в месте использования не работает
+            // Keep focus transitions async so click handlers inside the picker can finish first.
             setTimeout(() => {
                 this.$refs.input.blur();
             });
@@ -256,18 +316,24 @@ export default {
             this.isShowCalendar ? this.close() : this.open();
         },
         checkAllowPrev() {
+            if (!this.activeLayers.length) {
+                return false;
+            }
             if (this.limitMin.isValid()) {
                 let firstMonth = this.activeLayers[0].moment;
                 firstMonth = firstMonth.subtract(1, 'month').endOf('month');
-                return firstMonth >= this.limitMin;
+                return !this.isBefore(firstMonth, this.limitMin);
             }
             return true;
         },
         checkAllowNext() {
+            if (!this.activeLayers.length) {
+                return false;
+            }
             if (this.limitMax.isValid()) {
                 let lastMonth = this.activeLayers[this.activeLayers.length - 1].moment;
                 lastMonth = lastMonth.add(1, 'month').startOf('month');
-                return this.limitMax >= lastMonth;
+                return !this.isBefore(this.limitMax, lastMonth);
             }
             return true;
         },
@@ -317,23 +383,33 @@ export default {
         max() {
             this.initCalendar();
         },
+        locale() {
+            this.dateModel = this.getDateModelFromValue();
+            this.initCalendar();
+        },
         value: {
             handler() {
-                this.inputValue = this.value;
-                this.dateModel = this.getDateModelFromValue();
+                this.syncInputValue(this.currentValue);
             },
             immediate: true,
         },
-        inputValue() {
-            this.$emit('input', this.inputValue)
+        modelValue: {
+            handler() {
+                this.syncInputValue(this.currentValue);
+            },
+            immediate: true,
+        },
+        inputValue(value) {
+            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
         dateModel() {
             if (this.dateModel.isValid()) {
 
-                if (this.limitMin && this.limitMin.isValid() && this.dateModel < this.limitMin) {
+                if (this.limitMin && this.limitMin.isValid() && this.isBefore(this.dateModel, this.limitMin)) {
                     this.dateModel = this.limitMin;
                 }
-                if (this.limitMax && this.limitMax.isValid() && this.dateModel > this.limitMax) {
+                if (this.limitMax && this.limitMax.isValid() && this.isAfter(this.dateModel, this.limitMax)) {
                     this.dateModel = this.limitMax;
                 }
 
