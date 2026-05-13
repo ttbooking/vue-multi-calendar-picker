@@ -5117,7 +5117,7 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ const setPublicPath = (null);
 
-;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/VueCalendar.vue?vue&type=template&id=5b0d2455&
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/VueCalendar.vue?vue&type=template&id=bc68c114&
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
@@ -5351,8 +5351,8 @@ function teardown(el) {
 	unbind: teardown,
 	unmounted: teardown,
 });
-;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/CalendarLayer.vue?vue&type=template&id=88712c38&
-var CalendarLayervue_type_template_id_88712c38_render = function render() {
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/CalendarLayer.vue?vue&type=template&id=05124f34&
+var CalendarLayervue_type_template_id_05124f34_render = function render() {
   var _vm = this,
     _c = _vm._self._c;
   return _c('div', {
@@ -5444,7 +5444,7 @@ var CalendarLayervue_type_template_id_88712c38_render = function render() {
     }), 0);
   })], 2);
 };
-var CalendarLayervue_type_template_id_88712c38_staticRenderFns = [];
+var CalendarLayervue_type_template_id_05124f34_staticRenderFns = [];
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.is-array.js
 var es_array_is_array = __webpack_require__(9753);
@@ -6738,7 +6738,6 @@ esm.extend(customParseFormat);
       return date.locale(this.locale || 'ru');
     },
     getCalendarLayer: function getCalendarLayer() {
-      var _this$min, _this$max;
       var currentHour = this.current.hour() || 0;
       var currentMinute = this.current.minute() || 0;
       var currentSeconds = this.current.second() || 0;
@@ -6755,8 +6754,8 @@ esm.extend(customParseFormat);
         7: null
       };
       var weeks = [];
-      var minDate = (_this$min = this.min) !== null && _this$min !== void 0 && _this$min.isValid() ? this.min.hour(currentHour).minute(currentMinute).second(currentSeconds) : null;
-      var maxDate = (_this$max = this.max) !== null && _this$max !== void 0 && _this$max.isValid() ? this.max.hour(currentHour).minute(currentMinute).second(currentSeconds) : null;
+      var minDate = this.min && this.min.isValid() ? this.min.hour(currentHour).minute(currentMinute).second(currentSeconds) : null;
+      var maxDate = this.max && this.max.isValid() ? this.max.hour(currentHour).minute(currentMinute).second(currentSeconds) : null;
       var lastWeek = +momentDate.isoWeek();
       var currentWeek = Object.assign({}, week);
       while (+momentDate.month() === +this.month) {
@@ -6829,14 +6828,13 @@ esm.extend(customParseFormat);
         month: []
       };
       for (var i = 0; i < 12; i++) {
-        var _this$min2, _this$max2;
         var disabled = false;
         var month = this.getLocalizedDate().year(this.year).month(i).endOf('month');
         var text = month.format('MMMM');
-        if ((_this$min2 = this.min) !== null && _this$min2 !== void 0 && _this$min2.isValid() && this.isAfter(this.min, month)) {
+        if (this.min && this.min.isValid() && this.isAfter(this.min, month)) {
           disabled = true;
         }
-        if ((_this$max2 = this.max) !== null && _this$max2 !== void 0 && _this$max2.isValid() && this.isBefore(this.max, month.startOf('month'))) {
+        if (this.max && this.max.isValid() && this.isBefore(this.max, month.startOf('month'))) {
           disabled = true;
         }
         this.selectorData.month.push({
@@ -6849,12 +6847,11 @@ esm.extend(customParseFormat);
       var start = this.year - 4;
       var end = this.year + 5;
       for (var _i = start; _i < end; _i++) {
-        var _this$min3, _this$max3;
         var _disabled = false;
-        if ((_this$min3 = this.min) !== null && _this$min3 !== void 0 && _this$min3.isValid() && parseInt(this.min.format('YYYY')) > _i) {
+        if (this.min && this.min.isValid() && parseInt(this.min.format('YYYY')) > _i) {
           _disabled = true;
         }
-        if ((_this$max3 = this.max) !== null && _this$max3 !== void 0 && _this$max3.isValid() && parseInt(this.max.format('YYYY')) < _i) {
+        if (this.max && this.max.isValid() && parseInt(this.max.format('YYYY')) < _i) {
           _disabled = true;
         }
         this.selectorData.year.push({
@@ -6986,8 +6983,8 @@ function normalizeComponent(
 ;
 var component = normalizeComponent(
   Components_CalendarLayervue_type_script_lang_js_,
-  CalendarLayervue_type_template_id_88712c38_render,
-  CalendarLayervue_type_template_id_88712c38_staticRenderFns,
+  CalendarLayervue_type_template_id_05124f34_render,
+  CalendarLayervue_type_template_id_05124f34_staticRenderFns,
   false,
   null,
   null,
@@ -6996,8 +6993,8 @@ var component = normalizeComponent(
 )
 
 /* harmony default export */ const CalendarLayer = (component.exports);
-;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/TimePicker.vue?vue&type=template&id=27ed8a92&
-var TimePickervue_type_template_id_27ed8a92_render = function render() {
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/TimePicker.vue?vue&type=template&id=9c93bc6c&
+var TimePickervue_type_template_id_9c93bc6c_render = function render() {
   var _vm = this,
     _c = _vm._self._c;
   return _c('div', [_c('div', {
@@ -7122,7 +7119,7 @@ var TimePickervue_type_template_id_27ed8a92_render = function render() {
     });
   }), 0) : _vm._e()])]);
 };
-var TimePickervue_type_template_id_27ed8a92_staticRenderFns = [];
+var TimePickervue_type_template_id_9c93bc6c_staticRenderFns = [];
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-82.use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??ruleSet[1].rules[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/Components/SimpleCountPicker.vue?vue&type=template&id=538bd536&
 var SimpleCountPickervue_type_template_id_538bd536_render = function render() {
@@ -7355,12 +7352,10 @@ var SimpleCountPicker_component = normalizeComponent(
       this.seconds = parseInt(this.model.format('ss')) || 0;
     },
     currentDateIsMin: function currentDateIsMin(compareFormat) {
-      var _this$min;
-      return ((_this$min = this.min) === null || _this$min === void 0 ? void 0 : _this$min.isValid()) && this.model.format(compareFormat) === this.min.format(compareFormat);
+      return this.min && this.min.isValid() && this.model.format(compareFormat) === this.min.format(compareFormat);
     },
     currentDateIsMax: function currentDateIsMax(compareFormat) {
-      var _this$max;
-      return ((_this$max = this.max) === null || _this$max === void 0 ? void 0 : _this$max.isValid()) && this.model.format(compareFormat) === this.max.format(compareFormat);
+      return this.max && this.max.isValid() && this.model.format(compareFormat) === this.max.format(compareFormat);
     },
     getMinHours: function getMinHours() {
       return this.currentDateIsMin('DD.MM.YYYY') ? parseInt(this.min.format('HH')) : 0;
@@ -7444,8 +7439,8 @@ var SimpleCountPicker_component = normalizeComponent(
 ;
 var TimePicker_component = normalizeComponent(
   Components_TimePickervue_type_script_lang_js_,
-  TimePickervue_type_template_id_27ed8a92_render,
-  TimePickervue_type_template_id_27ed8a92_staticRenderFns,
+  TimePickervue_type_template_id_9c93bc6c_render,
+  TimePickervue_type_template_id_9c93bc6c_staticRenderFns,
   false,
   null,
   null,
@@ -7524,9 +7519,8 @@ var TimePicker_component = normalizeComponent(
     locale: {
       type: [String, Object],
       "default": function _default() {
-        var _window$locale;
-        var locale = typeof window !== 'undefined' ? (_window$locale = window.locale) === null || _window$locale === void 0 ? void 0 : _window$locale.toLowerCase() : null;
-        return (locale === null || locale === void 0 ? void 0 : locale.split('-')[0]) || 'ru';
+        var locale = typeof window !== 'undefined' ? window.locale && window.locale.toLowerCase() : null;
+        return locale ? locale.split('-')[0] : 'ru';
       }
     }
   },
@@ -7630,8 +7624,7 @@ var TimePicker_component = normalizeComponent(
       }
     },
     initCalendar: function initCalendar() {
-      var _this$dateModel;
-      var date = (_this$dateModel = this.dateModel) !== null && _this$dateModel !== void 0 && _this$dateModel.isValid() ? this.dateModel : this.getLocalizedDate();
+      var date = this.dateModel && this.dateModel.isValid() ? this.dateModel : this.getLocalizedDate();
       if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
         this.inputValue = this.min;
         this.dateModel = this.limitMin;

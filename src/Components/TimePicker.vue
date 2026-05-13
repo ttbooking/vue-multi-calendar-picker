@@ -109,10 +109,10 @@ export default {
             this.seconds = parseInt(this.model.format('ss')) || 0;
         },
         currentDateIsMin(compareFormat) {
-            return this.min?.isValid() && this.model.format(compareFormat) === this.min.format(compareFormat);
+            return this.min && this.min.isValid() && this.model.format(compareFormat) === this.min.format(compareFormat);
         },
         currentDateIsMax(compareFormat) {
-            return this.max?.isValid() && this.model.format(compareFormat) === this.max.format(compareFormat);
+            return this.max && this.max.isValid() && this.model.format(compareFormat) === this.max.format(compareFormat);
         },
         getMinHours() {
             return this.currentDateIsMin('DD.MM.YYYY') ? parseInt(this.min.format('HH')) : 0;

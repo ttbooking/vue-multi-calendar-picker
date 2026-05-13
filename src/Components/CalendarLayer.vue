@@ -99,14 +99,14 @@ export default {
             let week = {1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null,};
             let weeks = [];
 
-            let minDate = this.min?.isValid()
+            let minDate = this.min && this.min.isValid()
                 ? this.min
                 .hour(currentHour)
                 .minute(currentMinute)
                     .second(currentSeconds)
                 : null;
 
-            let maxDate = this.max?.isValid()
+            let maxDate = this.max && this.max.isValid()
                 ? this.max
                 .hour(currentHour)
                 .minute(currentMinute)
@@ -184,10 +184,10 @@ export default {
                 let month = this.getLocalizedDate().year(this.year).month(i).endOf('month');
                 let text = month.format('MMMM');
 
-                if (this.min?.isValid() && this.isAfter(this.min, month)) {
+                if (this.min && this.min.isValid() && this.isAfter(this.min, month)) {
                     disabled = true;
                 }
-                if (this.max?.isValid() && this.isBefore(this.max, month.startOf('month'))) {
+                if (this.max && this.max.isValid() && this.isBefore(this.max, month.startOf('month'))) {
                     disabled = true;
                 }
 
@@ -202,10 +202,10 @@ export default {
             let end = this.year + 5;
             for (let i = start; i < end; i++) {
                 let disabled = false;
-                if (this.min?.isValid() && parseInt(this.min.format('YYYY')) > i) {
+                if (this.min && this.min.isValid() && parseInt(this.min.format('YYYY')) > i) {
                     disabled = true;
                 }
-                if (this.max?.isValid() && parseInt(this.max.format('YYYY')) < i) {
+                if (this.max && this.max.isValid() && parseInt(this.max.format('YYYY')) < i) {
                     disabled = true;
                 }
 

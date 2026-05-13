@@ -146,9 +146,9 @@ export default {
             type: [String, Object],
             default: () => {
                 const locale = typeof window !== 'undefined'
-                    ? window.locale?.toLowerCase()
+                    ? window.locale && window.locale.toLowerCase()
                     : null;
-                return locale?.split('-')[0] || 'ru';
+                return locale ? locale.split('-')[0] : 'ru';
             },
         }
     },
@@ -260,7 +260,7 @@ export default {
             }
         },
         initCalendar() {
-            let date = this.dateModel?.isValid() ? this.dateModel : this.getLocalizedDate();
+            let date = this.dateModel && this.dateModel.isValid() ? this.dateModel : this.getLocalizedDate();
 
             if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
                 this.inputValue = this.min;
