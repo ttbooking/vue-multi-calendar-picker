@@ -1,6 +1,6 @@
 # vue-multi-calendar-picker
 
-Calendar picker for Vue 2.7 based on dayjs.
+Calendar picker for Vue 2.7 and Vue 3 based on dayjs.
 
 ## Installation
 
@@ -8,9 +8,11 @@ Calendar picker for Vue 2.7 based on dayjs.
 yarn add vue-multi-calendar-picker dayjs
 ```
 
-Vue is a peer dependency and must be provided by the host application.
+Vue is a peer dependency and must be provided by the host application. Supported peer range: `^2.7.14 || ^3.2.0`.
 
 ## Usage
+
+Vue 2:
 
 ```vue
 <template>
@@ -61,11 +63,27 @@ export default {
 </script>
 ```
 
+Vue 3:
+
+```vue
+<template>
+  <vue-calendar v-model="date" format="DD.MM.YYYY" locale="en" />
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import VueCalendar from 'vue-multi-calendar-picker';
+
+const date = ref('');
+</script>
+```
+
 ## Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `String` | - | Selected value used by `v-model`. |
+| `value` | `String` | - | Selected value used by Vue 2 `v-model`. |
+| `modelValue` | `String` | - | Selected value used by Vue 3 `v-model`. |
 | `placeholder` | `String` | - | Input placeholder. |
 | `format` | `String` | `DD.MM.YYYY` | dayjs parse/format string. Include `H`, `h`, `k`, `m`, or `s` to enable time selection. |
 | `calendarsCount` | `Number` | `1` | Number of month layers displayed at once. |
@@ -95,7 +113,8 @@ window.locale = 'en-US';
 
 | Event | Payload | Description |
 | --- | --- | --- |
-| `input` | `String` | Emitted for `v-model` changes. |
+| `input` | `String` | Emitted for Vue 2 `v-model` changes. |
+| `update:modelValue` | `String` | Emitted for Vue 3 `v-model` changes. |
 | `selected` | `Array` | Emitted after a date, or date and time, is selected. |
 | `dayHover` | `dayjs\|undefined` | Emitted when hovering a day. |
 | `layerChange` | `Array` | Emitted when visible months/years change. |
@@ -124,6 +143,10 @@ The library build is generated in `dist`.
 
 The default package entry imports `src/sass/style.scss`, so bundler-based applications receive the component styles automatically. For direct UMD usage, include `dist/vue-multi-calendar-picker.css` next to the UMD script.
 
-## Vue 3 migration notes
+## Vue 2 and Vue 3
 
-This package currently targets Vue 2.7. A Vue 3 major version should replace `value`/`input` with `modelValue`/`update:modelValue`, update the click-outside directive lifecycle, and switch the example app/build tooling to Vite.
+The component accepts both `value`/`input` and `modelValue`/`update:modelValue`, so normal `v-model` works in Vue 2.7 and Vue 3. The click-outside directive dependency must be `@ttbooking/vue-click-outside-directive@1.1.0` or newer for Vue 3 support.
+
+## Plans
+
+- Add a dedicated Vue 3 build pipeline.

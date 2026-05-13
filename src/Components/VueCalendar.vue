@@ -49,7 +49,10 @@
                         :marked-range="markedDateRange"
                         :disabled-days="disabledDays"
                         :locale="normalizedLocale"
-                        v-model="dateModel"
+                        :value="dateModel"
+                        :model-value="dateModel"
+                        @input="dateModel = $event"
+                        @update:modelValue="dateModel = $event"
                         @select="selectHandler"
                         @dayHover="payload => $emit('dayHover', payload)"
                         @layer="payload => selectLayer(payload, index)"
@@ -61,10 +64,14 @@
                 </div>
             </div>
             <div class="time-picker-container" v-else-if="!isTimeSelected">
-                <time-picker v-model="dateModel"
+                <time-picker
+                             :value="dateModel"
+                             :model-value="dateModel"
                              :format="format"
                              :min="limitMin"
                              :max="limitMax"
+                             @input="dateModel = $event"
+                             @update:modelValue="dateModel = $event"
                              @close="selectHandler(true)"
                 >
                     <template #title>
@@ -89,6 +96,7 @@ export default {
     name: "vue-calendar",
     props: {
         value: String,
+        modelValue: String,
         placeholder: String,
         format: {
             type: String,
@@ -144,20 +152,24 @@ export default {
             },
         }
     },
-    emits: ['input', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
+    emits: ['input', 'update:modelValue', 'dayHover', 'selected', 'layerChange', 'focus', 'close'],
     created() {
         this.initCalendar();
     },
     data() {
+        const initialValue = this.modelValue !== undefined ? this.modelValue : this.value;
         return {
-            inputValue: this.value,
-            dateModel: this.getDateModelFromValue(),
+            inputValue: initialValue,
+            dateModel: this.getDateModelFromValue(initialValue),
             activeLayers: [],
             isDateSelected: true,
             isTimeSelected: true,
         };
     },
     computed: {
+        currentValue() {
+            return this.modelValue !== undefined ? this.modelValue : this.value;
+        },
         isWithTime() {
             return this.format.match(/[Hhkms]/)
         },
@@ -193,6 +205,12 @@ export default {
         }
     },
     methods: {
+        syncInputValue(value) {
+            if (this.inputValue !== value) {
+                this.inputValue = value;
+                this.dateModel = this.getDateModelFromValue();
+            }
+        },
         isBefore(date, limit) {
             return date.isValid() && limit.isValid() && date.valueOf() < limit.valueOf();
         },
@@ -246,19 +264,21 @@ export default {
 
             if (this.min && this.min.length && this.isBefore(date, this.limitMin)) {
                 this.inputValue = this.min;
+                this.dateModel = this.limitMin;
                 date = this.limitMin;
             }
             if (this.max && this.max.length && this.isAfter(date, this.limitMax)) {
                 if (!this.limitMin.isValid() || this.isAfter(this.limitMax, this.limitMin)) {
                     this.inputValue = this.max;
+                    this.dateModel = this.limitMax;
                     date = this.limitMax;
                 }
             }
 
             this.initCalendarLayers(date);
         },
-        getDateModelFromValue() {
-            return this.parseDate(this.inputValue);
+        getDateModelFromValue(value = this.currentValue) {
+            return this.parseDate(value);
         },
         focus() {
             setTimeout(() => {
@@ -369,13 +389,19 @@ export default {
         },
         value: {
             handler() {
-                this.inputValue = this.value;
-                this.dateModel = this.getDateModelFromValue();
+                this.syncInputValue(this.currentValue);
             },
             immediate: true,
         },
-        inputValue() {
-            this.$emit('input', this.inputValue)
+        modelValue: {
+            handler() {
+                this.syncInputValue(this.currentValue);
+            },
+            immediate: true,
+        },
+        inputValue(value) {
+            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
         dateModel() {
             if (this.dateModel.isValid()) {

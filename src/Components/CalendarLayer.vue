@@ -50,7 +50,8 @@ import dayjs from '../setup.dayjs.js';
 
 export default {
     name: "calendar-layer",
-    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'disabledDays', 'locale'],
+    props: ['year', 'month', 'markedRange', 'selected', 'min', 'max', 'current', 'value', 'modelValue', 'disabledDays', 'locale'],
+    emits: ['input', 'update:modelValue', 'select', 'dayHover', 'layer'],
     data() {
         return {
             showSelector: false,
@@ -164,6 +165,7 @@ export default {
         },
         chooseDate(item) {
             this.$emit('input', item);
+            this.$emit('update:modelValue', item);
             this.$emit('select');
         },
         selectYear() {
